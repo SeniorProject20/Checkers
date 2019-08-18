@@ -1,21 +1,21 @@
 import numpy as np;
 
-# static global vars
-NUM_ROWS = 8;
-NUM_COLUMNS = 8;
-NUM_BLACK = 12;
-NUM_RED = 12;
-BLACK = 1;
-RED = 2;
-NOT_USED = 0;
 
 class Board:
+  # static class vars
+  NUM_ROWS = 8;
+  NUM_COLUMNS = 8;
+  NUM_BLACK = 12;
+  NUM_RED = 12;
+  BLACK = 1;
+  RED = 2;
+  NOT_USED = 0;
 
   # initializing class vars
-  def __init__(self):
-    self.board = None;
-    self.blackCheckers = [[],[],[],[],[],[],[],[],[],[],[],[]];
-    self.redCheckers = [[],[],[],[],[],[],[],[],[],[],[],[]];
+  def __init__(self, board, blackCheckers, redCheckers):
+    self.board = board;
+    self.blackCheckers = blackCheckers;
+    self.redCheckers = redCheckers;
 
   # delete objects
   def __del__(self):
@@ -30,19 +30,31 @@ class Board:
 
   # create an empty board
   def create_board(self):
-    self.board = np.zeros((NUM_ROWS, NUM_COLUMNS));
+    self.board = np.zeros((self.NUM_COLUMNS, self.NUM_ROWS));
 
   # mark invalid spaces
   def mark_invalid_spaces(self):
     x, y = 0, 0;
-    for x in range(NUM_ROWS):
-      for y in range(NUM_COLUMNS):
+    for x in range(self.NUM_COLUMNS):
+      for y in range(self.NUM_ROWS):
         if (x + y) % 2:
-          self.board[x][y] = -1;
+          self.board[x][y] = None;
 
-  # check if any given space on any board is open
-  def isSpaceOpen(self, board, row, column):
-    return self.board[row][column] == 0;
+  # check if any given space is open
+  def isSpaceOpen(self, board, column, row):
+    return self.board[column][row] == 0;
+
+  # returns if a space is playable
+  def isSpaceValid(self, column, row):
+    return not (self.board[column][row] == None);
+
+  # Checks if a space has a red checker
+  def isRedChecker(self, column, row):
+    return self.board[column][row] == 2;
+
+  # Checks if a space has a red checker
+  def isBlackChecker(self, column, row):
+    return self.board[column][row] == 1;
 
   # make a copy of the board passed in
   def copyBoard(self, old_board):
@@ -52,8 +64,8 @@ class Board:
   # sets all pieces back to their default position
   def set_pieces_to_default(self):
     b, r = 0, 0;
-    for x in range(NUM_ROWS):
-      for y in range(NUM_COLUMNS):
+    for x in range(self.NUM_COLUMNS):
+      for y in range(self.NUM_ROWS):
         if not (x == 3 or x == 4):
           if x < 3 and b < 12 and not (x + y) % 2:
             self.blackCheckers[b] = [x, y];
@@ -64,14 +76,13 @@ class Board:
             self.board[x][y] = RED;
             r += 1;
 
-
   # prints the board with AI pieces(black, 1) at bottom
-  def printBoard(self):
-    print(np.flip(self.board, 0))
+  def printBoard(self, board):
+    print(np.flip(board, 0))
 
 
 
 
-ex = Board();
+ex = Board([], [[],[],[],[],[],[],[],[],[],[],[],[]], [[],[],[],[],[],[],[],[],[],[],[],[]]);
 ex.initBoard();
 ex.printBoard();

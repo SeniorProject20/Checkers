@@ -10,7 +10,9 @@ BLACK = 1;
 RED = 2;
 NOT_USED = 0;
 
-
+board = np.zeros((NUM_COLUMNS, NUM_ROWS));
+board[1][1] = None;
+print(board)
 
 # np.ones(# of col)
 # np.zeros()
