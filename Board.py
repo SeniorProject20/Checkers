@@ -2,6 +2,7 @@ import numpy as np;
 
 
 class Board:
+
   # static class vars
   NUM_ROWS = 8;
   NUM_COLUMNS = 8;
@@ -12,10 +13,8 @@ class Board:
   NOT_USED = 0;
 
   # initializing class vars
-  def __init__(self, board, blackCheckers, redCheckers):
+  def __init__(self, board):
     self.board = board;
-    self.blackCheckers = blackCheckers;
-    self.redCheckers = redCheckers;
 
   # delete objects
   def __del__(self):
@@ -32,14 +31,6 @@ class Board:
   def create_board(self):
     self.board = np.zeros((self.NUM_COLUMNS, self.NUM_ROWS));
 
-  # mark invalid spaces
-  def mark_invalid_spaces(self):
-    x, y = 0, 0;
-    for x in range(self.NUM_COLUMNS):
-      for y in range(self.NUM_ROWS):
-        if (x + y) % 2:
-          self.board[x][y] = None;
-
   # check if any given space is open
   def isSpaceOpen(self, board, column, row):
     return self.board[column][row] == 0;
@@ -47,14 +38,6 @@ class Board:
   # returns if a space is playable
   def isSpaceValid(self, column, row):
     return not (self.board[column][row] == None);
-
-  # Checks if a space has a red checker
-  def isRedChecker(self, column, row):
-    return self.board[column][row] == 2;
-
-  # Checks if a space has a red checker
-  def isBlackChecker(self, column, row):
-    return self.board[column][row] == 1;
 
   # make a copy of the board passed in
   def copyBoard(self, old_board):
