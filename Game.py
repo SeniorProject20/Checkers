@@ -1,4 +1,4 @@
-import Board;
+import Board, Checker;
 import numpy as np;
 
 

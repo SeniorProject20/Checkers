@@ -1,71 +1,65 @@
-import numpy as np;
-
+import Checker, copy;
 
 class Board:
 
-  # static class vars
   NUM_ROWS = 8;
   NUM_COLUMNS = 8;
   NUM_BLACK = 12;
   NUM_RED = 12;
-  BLACK = 1;
-  RED = 2;
   NOT_USED = 0;
 
-  # initializing class vars
-  def __init__(self, board):
-    self.board = board;
+  def __init__(self):
+    self.board = [[self.NUM_ROWS],[self.NUM_COLUMNS]];
+    self.InitializeBoard();
 
-  # delete objects
-  def __del__(self):
-    pass;
-
-  # create a board that is ready to start playing
-  def initBoard(self):
-    self.create_board();
+  # creates a board set to begin play
+  def InitializeBoard(self):
     self.mark_invalid_spaces();
     self.set_pieces_to_default();
-    self.printBoard();
 
-  # create an empty board
-  def create_board(self):
-    self.board = np.zeros((self.NUM_COLUMNS, self.NUM_ROWS));
+  # mark invalid spaces
+  def mark_invalid_spaces(self):
+    row, column = 0, 0;
+    for row in range(self.NUM_ROWS):
+      for column in range(self.NUM_COLUMNS):
+        if (row + column) % 2:
+          self.board[row][column] = None;
+  
+  # returns if the position in question is open
+  def IsSpaceOpen(self, row, column):
+    if self.board[[row],[column]] == self.NOT_USED:
+      return True;
+    else:
+      return False;
 
-  # check if any given space is open
-  def isSpaceOpen(self, board, column, row):
-    return self.board[column][row] == 0;
-
-  # returns if a space is playable
-  def isSpaceValid(self, column, row):
-    return not (self.board[column][row] == None);
-
-  # make a copy of the board passed in
-  def copyBoard(self, old_board):
-    new_board = old_board;
+  # makes a deepcopy of the board passed in
+  def CopyBoard(self):
+    new_board = copy.deepcopy(self.board);
     return new_board;
 
-  # sets all pieces back to their default position
+  # sets all checkers to their default position
   def set_pieces_to_default(self):
     b, r = 0, 0;
-    for x in range(self.NUM_COLUMNS):
-      for y in range(self.NUM_ROWS):
-        if not (x == 3 or x == 4):
-          if x < 3 and b < 12 and not (x + y) % 2:
-            self.blackCheckers[b] = [x, y];
-            self.board[x][y] = BLACK;
+    for row in range(self.NUM_ROWS):
+      for column in range(self.NUM_COLUMNS):
+        if (row == 3 or row == 4):
+          name = self.NOT_USED;
+        else:
+          if x < 3 and b < self.NUM_BLACK and not (row + column) % 2:
+            name = 'b' + str(b);
+            name = Checker('black');
             b += 1;
-          elif x > 4 and r < 12 and not (x + y) % 2:
-            self.redCheckers[r] = [x, y];
-            self.board[x][y] = RED;
+          elif x > 4 and r < self.NUM_RED and not (row + column) % 2:
+            name = 'r' + str(r);
+            name = Checker('red');
             r += 1;
-
-  # prints the board with AI pieces(black, 1) at bottom
-  def printBoard(self, board):
-    print(np.flip(board, 0))
+        board[[row], [column]] = name;
 
 
+x = 6;
 
 
-ex = Board([], [[],[],[],[],[],[],[],[],[],[],[],[]], [[],[],[],[],[],[],[],[],[],[],[],[]]);
-ex.initBoard();
-ex.printBoard();
+
+
+
+
