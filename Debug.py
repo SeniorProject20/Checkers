@@ -1,29 +1,9 @@
 ## Scratch paper file to try functions
-import numpy as np
-import pygame
-
-# # static global vars
-# NUM_ROWS = 8;
-# NUM_COLUMNS = 8;
-# NUM_BLACK = 12;
-# NUM_RED = 12;
-# BLACK = 1;
-# RED = 2;
-# NOT_USED = 0;
-#
-# board = []
-# for i in range(64):
-#   board.append([])
-# print(len(board))
-# board[0].append(3)
-# board[0].append(4)
-# board[0].append(True)
-# print(board)
-# for i in range(len(board)):
-#   if i % 2:
-#     board[i].append(None);
-# print(board)
-
+import numpy as np;
+from Checker import Checker;
+from Board import Board;
+from Game import Game;
+# import pygame
 
 # # Checks if a space has a red checker
 # def isRedChecker(self, column, row):
@@ -95,13 +75,6 @@ import pygame
 #   def printBoard(self, board):
 #     print(np.flip(board, 0))
 #
-#
-#
-#
-# ex = Board([], [[],[],[],[],[],[],[],[],[],[],[],[]], [[],[],[],[],[],[],[],[],[],[],[],[]]);
-# ex.initBoard();
-# ex.printBoard();
-#
 # # mark invalid spaces
 # def mark_invalid_spaces(self):
 #   x, y = 0, 0;
@@ -130,7 +103,7 @@ import pygame
 # clock = pg.time.Clock()
 #
 # colors = itertools.cycle((WHITE, BLACK))
-# tile_size = 40
+# tile_size = 60
 # width, height = 8*tile_size, 8*tile_size
 # background = pg.Surface((width, height))
 #
@@ -153,3 +126,16 @@ import pygame
 #     clock.tick(30)
 #
 # pg.quit()
+
+
+
+name = 'R0'
+check = Checker('red', name);
+check.isKing = True;
+# print(type(check))
+hi = {}
+hi[name] = check;
+get1 = hi['R0']
+print(get1)
+this = [1,2,'r0','b0']
+print(this.index('b0'))
