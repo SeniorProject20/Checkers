@@ -18,20 +18,30 @@ class Game:
 
   def get_checker_to_move(self):
     piece = input('Which piece would you like to move? (R0-R11)').upper();
-    return piece;
+    if piece in board.CHECKERS:
+      return piece;
+    else:
+      return None;
 
   def get_move_to(self):
     move = input('Where would you like to move it? (1,8),(A-H): ').upper();
     row, column  = game.translate_input(move);
-    return place_moving_column, place_moving_row;
+    if board[row][column] != board.INVALID_SPACE:
+      if row in range(board.NUM_ROWS):
+        if column in range(board.NUM_COLUMNS):
+          return place_moving_column, place_moving_row;
+      else:
+        return None;
 
 if __name__ == '__main__':
   game = Game();
   board = Board();
+  board.InitializeBoard();
   while not game.GAME_OVER:
     if not game.AI_TURN:
       piece = game.get_checker_to_move();
       row, column = game.get_move_to();
+      # check for none returns
       if board.Move(piece, row, column):
         # update board
         pass

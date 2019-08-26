@@ -37,37 +37,128 @@ class Board:
       return False;
 
   # move a checker
-  def Move(self, checker_name, row, column):
-    index = self.board.index(checker_name);
-    checker_obj = self.CHECKERS[checker_name];
-    if self.is_move_valid(checker_obj, row, column):
-      self.board[row][column] = checker_name;
-      self.board[moving_from_row][moving_from_column] = self.FREE_SPACE;
+  def Move(self, checker_name, new_row, new_column):
+    current_row, current_column = self.get_checker_index_from_name(checker_name);
+    checker_obj = self.get_checker_object_from_name(checker_name);
+    if self.is_move_valid(checker_obj, current_row, current_column, new_row, new_column):
+      self.board[new_row][new_column] = checker_name;
+      self.board[current_row][current_column] = self.FREE_SPACE;
+      if (new_row == 0 and checker_obj.color == 'red') or (new_row == 7 and checker_obj.color == 'black'):
+        checker_obj.KingMe();
       return True;
     else:
       return False;
 
   # check if a move is valid
-  def is_move_valid(self, checker_obj, row, column):
-    if self.board[row][column] != self.INVALID_SPACE:
-      name = self.board[moving_from_row][moving_from_column];
-      if self.board[row][column] == self.FREE_SPACE :
-        if checker_obj.isKing:
-          if (moving_from_row == (row + 1)) or (moving_from_row == (row - 1)):
-            pass
-        elif checker_obj.color == 'red':
-          if moving_from_row == row + 1:
-            pass
+  def is_move_valid(self, checker_obj, current_row, current_column, new_row, new_column):
+    if self.board[new_row][new_column] != self.INVALID_SPACE:
+      if self.board[new_row][new_column] == self.FREE_SPACE:
+        if abs(current_row - new_row) < 2:
+          if self.check_free_space_move(checker_obj, current_row, current_column, new_row, new_column):
+            return True;
         else:
-          if moving_from_row == row - 1:
-            pass
+          if self.check_jump_move(checker_obj, current_row, current_column, new_row, new_column):
+            return True;
     else:
       return False;
+
+  # proforms a free space move
+  def check_free_space_move(self, checker_obj, current_row, current_column, new_row, new_column):
+    if checker_obj.isKing:
+      if (current_row == (new_row + 1)) or (current_row == (new_row - 1)):
+        if (current_column == (new_column + 1)) or (current_column == (new_column - 1)):
+          return True;
+    elif checker_obj.color == 'black':
+      if (new_row == current_row + 1) and (current_column == (new_column + 1)) or (current_column == (new_column - 1)):
+        return True;
+    elif checker_obj.color == 'red:':
+      if (new_row == current_row - 1) and (current_column == (new_column + 1)) or (current_column == (new_column - 1)):
+        return True;
+    else:
+      return False;
+
+  # checks to see if a legal jump is possible
+  def check_jump_move(self, checker_obj, current_row, current_column, new_row, new_column):
+    move_left, move_forward = True, True;
+    if new_column > current_column:
+      move_left = False;
+    if new_row < current_row:
+      move_forward = False;
+
+    checker_to_jump = self.get_checker_obj_to_jump(checker_obj, current_row, current_column, move_left, move_forward);
+    if checker_to_jump != False:
+      if checker_to_jump.color != checker_obj.color:
+        if checker_obj.isKing:
+          if (current_row == (new_row + 2)) or (current_row == (new_row - 2)):
+            if (current_column == (new_column + 2)) or (current_column == (new_column - 2)):
+
+        elif checker_obj.color == 'black':
+          if (new_row == current_row + 2) and (current_column == (new_column + 2)) or (current_column == (new_column - 2)):
+
+
+            return True;
+        elif checker_obj.color == 'red:':
+          if (new_row == current_row - 2) and (current_column == (new_column + 2)) or (current_column == (new_column - 2)):
+            if move_left:
+
+            else:
+
+            return True;
+    else:
+      return False;
+
+  # gets the obj of the checker that is to be jumped
+  def get_checker_obj_to_jump(self, checker, current_row, current_column, left, move_forward):
+    move_up, move_down, move_left, move_right = current_row + 1, current_row - 1, current_column - 1, current_column + 1;
+    if move_forward:
+      if left:
+        if self.board[move_up][move_left] == self.FREE_SPACE or \
+            self.get_checker_obj_from_index(move_up, move_left).color == checker.color:
+          return False;
+        checker_to_jump = self.get_checker_obj_from_index(move_up, move_left);
+      else:
+        if self.board[move_up][move_right] == self.FREE_SPACE or \
+            self.get_checker_obj_from_index(move_up, move_right).color == checker.color:
+          return False;
+        checker_to_jump = self.get_checker_obj_from_index(move_up, move_right);
+    else:
+      if left:
+        if self.board[move_down][move_left] == self.FREE_SPACE or \
+            self.get_checker_obj_from_index(move_down, move_left).color == checker.color:
+          return False;
+        checker_to_jump = self.get_checker_obj_from_index(move_down, move_left);
+      else:
+        if self.board[move_down][move_right] == self.FREE_SPACE or \
+            self.get_checker_obj_from_index(move_down, move_right).color == checker.color:
+          return False;
+        checker_to_jump = self.get_checker_obj_from_index(move_down, move_right);
+    return checker_to_jump;
 
   # makes a deepcopy of the board passed in
   def CopyBoard(self):
     new_board = copy.deepcopy(self);
     return new_board;
+
+  # given a checker name, return the index for self.board
+  def get_checker_index_from_name(self, name):
+    current_row, current_column = 0, 0;
+    for i in range(len(self.board)):
+      try:
+        column = self.board[i].index(name);
+        current_row = i;
+        current_column = column;
+        return current_row, current_column;
+      except (ValueError) as e:
+        pass
+
+  # given a checker name, return the object
+  def get_checker_object_from_name(self, name):
+    return self.CHECKERS[name];
+
+  # given a checker index, return the object
+  def get_checker_obj_from_index(self, row, column):
+    name = self.board[row][column];
+    return self.CHECKERS[name];
 
   # sets all checkers to their default position
   def set_pieces_to_default(self):
@@ -99,6 +190,7 @@ class Board:
 
 if __name__ == '__main__': # for debugging this file
   x = Board();
+  x.InitializeBoard();
   x.Move('B8', 3,1)
   x.PrintBoard();
   print(x.IsSpaceOpen(3,1))

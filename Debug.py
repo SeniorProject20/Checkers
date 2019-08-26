@@ -129,13 +129,17 @@ from Game import Game;
 
 
 
-name = 'R0'
-check = Checker('red', name);
-check.isKing = True;
-# print(type(check))
-hi = {}
-hi[name] = check;
-get1 = hi['R0']
-print(get1)
-this = [1,2,'r0','b0']
-print(this.index('b0'))
+# name = 'R0'
+# check = Checker('red', name);
+# check.isKing = True;
+# # print(type(check))
+# hi = {}
+# hi[name] = check;
+# get1 = hi['R0']
+# print(get1)
+this = [[1],[2],['r0'],[1, 'h', 'b0']]
+for i in range(len(this)):
+  try:
+    print('[' + str(i) + ']' + '[' + str(this[i].index('b0')) + ']');
+  except (ValueError) as e:
+    print(str(e));
