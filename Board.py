@@ -110,6 +110,8 @@ class Board:
         if checker_obj.isKing:
           if (new_row == (current_row + 2)) or (new_row == (current_row - 2)):
             if (new_column == (current_column + 2)) or (new_column == (current_column - 2)):
+              self.board[r][c] = 0;
+              self.CHECKERS.pop(checker_to_jump.name);
               del checker_to_jump;
               return True;
             else:
@@ -118,18 +120,20 @@ class Board:
             return False;
         elif checker_obj.color == 'black':
           if (new_row == (current_row + 2)):
-            if (current_column == (new_column + 2)) or (current_column == (new_column - 2)):
-              self.board[r][c] = 0;
+            if (new_column == (current_column + 2)) or (new_column == (current_column - 2)):
+              self.board[r][c] = self.FREE_SPACE;
+              self.CHECKERS.pop(checker_to_jump.name);
               del checker_to_jump;
               return True;
             else:
               return False;
           else:
             return False;
-        elif checker_obj.color == 'red:':
+        elif checker_obj.color == 'red':
           if (new_row == (current_row - 2)):
             if (new_column == (current_column + 2)) or (new_column == (current_column - 2)):
-              self.board[r][c] = 0;
+              self.board[r][c] = self.FREE_SPACE;
+              self.CHECKERS.pop(checker_to_jump.name);
               del checker_to_jump;
               return True;
             else:
@@ -172,7 +176,6 @@ class Board:
           return False;
         checker_to_jump = self.get_checker_obj_from_index(move_down, move_right);
         return checker_to_jump, move_down, move_right;
-
 
   # makes a deepcopy of the board passed in
   def CopyBoard(self):
@@ -232,11 +235,13 @@ class Board:
 if __name__ == '__main__': # for debugging this file
   x = Board();
   x.InitializeBoard();
-  x.PrintBoard();
   x.Move('R0', 4,2);
   x.PrintBoard();
   x.Move('R0',3,3)
   x.PrintBoard();
   x.Move('B9',4,4)
   x.PrintBoard();
+  x.Move('R1',3,5)
+  x.PrintBoard();
   print(x.IsSpaceOpen(3,1))
+  print(x.CHECKERS)
