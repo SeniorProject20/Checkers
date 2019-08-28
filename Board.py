@@ -56,24 +56,42 @@ class Board:
         if abs(current_row - new_row) < 2:
           if self.check_free_space_move(checker_obj, current_row, current_column, new_row, new_column):
             return True;
+          else:
+            return False;
         else:
           if self.check_jump_move(checker_obj, current_row, current_column, new_row, new_column):
             return True;
+          else:
+            return False;
+      else:
+        return False;
     else:
       return False;
 
   # proforms a free space move
   def check_free_space_move(self, checker_obj, current_row, current_column, new_row, new_column):
     if checker_obj.isKing:
-      if (current_row == (new_row + 1)) or (current_row == (new_row - 1)):
-        if (current_column == (new_column + 1)) or (current_column == (new_column - 1)):
+      if (new_row == (current_row + 1)) or (new_row == (current_row - 1)):
+        if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
           return True;
+        else:
+          return False;
+      else:
+        return False;
     elif checker_obj.color == 'black':
-      if (new_row == current_row + 1) and (current_column == (new_column + 1)) or (current_column == (new_column - 1)):
-        return True;
-    elif checker_obj.color == 'red:':
-      if (new_row == current_row - 1) and (current_column == (new_column + 1)) or (current_column == (new_column - 1)):
-        return True;
+      if (new_row == current_row + 1):
+        if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
+          return True;
+        else:
+          return False;
+      else:
+        return False;
+    elif checker_obj.color == 'red':
+      if (new_row == (current_row - 1)):
+        if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
+          return True;
+      else:
+        return False;
     else:
       return False;
 
@@ -85,29 +103,47 @@ class Board:
     if new_row < current_row:
       move_forward = False;
 
-    checker_to_jump = self.get_checker_obj_to_jump(checker_obj, current_row, current_column, move_left, move_forward);
+    checker_to_jump, r, c = \
+      self.get_checker_obj_to_jump(checker_obj, current_row, current_column, move_left, move_forward);
     if checker_to_jump != False:
       if checker_to_jump.color != checker_obj.color:
         if checker_obj.isKing:
-          if (current_row == (new_row + 2)) or (current_row == (new_row - 2)):
-            if (current_column == (new_column + 2)) or (current_column == (new_column - 2)):
-
-        elif checker_obj.color == 'black':
-          if (new_row == current_row + 2) and (current_column == (new_column + 2)) or (current_column == (new_column - 2)):
-
-
-            return True;
-        elif checker_obj.color == 'red:':
-          if (new_row == current_row - 2) and (current_column == (new_column + 2)) or (current_column == (new_column - 2)):
-            if move_left:
-
+          if (new_row == (current_row + 2)) or (new_row == (current_row - 2)):
+            if (new_column == (current_column + 2)) or (new_column == (current_column - 2)):
+              del checker_to_jump;
+              return True;
             else:
-
-            return True;
+              return False;
+          else:
+            return False;
+        elif checker_obj.color == 'black':
+          if (new_row == (current_row + 2)):
+            if (current_column == (new_column + 2)) or (current_column == (new_column - 2)):
+              self.board[r][c] = 0;
+              del checker_to_jump;
+              return True;
+            else:
+              return False;
+          else:
+            return False;
+        elif checker_obj.color == 'red:':
+          if (new_row == (current_row - 2)):
+            if (new_column == (current_column + 2)) or (new_column == (current_column - 2)):
+              self.board[r][c] = 0;
+              del checker_to_jump;
+              return True;
+            else:
+              return False;
+          else:
+            return False;
+        else:
+          return False;
+      else:
+        return False;
     else:
       return False;
 
-  # gets the obj of the checker that is to be jumped
+  # gets the obj of the checker that is to be jumped based on coordinates
   def get_checker_obj_to_jump(self, checker, current_row, current_column, left, move_forward):
     move_up, move_down, move_left, move_right = current_row + 1, current_row - 1, current_column - 1, current_column + 1;
     if move_forward:
@@ -116,23 +152,27 @@ class Board:
             self.get_checker_obj_from_index(move_up, move_left).color == checker.color:
           return False;
         checker_to_jump = self.get_checker_obj_from_index(move_up, move_left);
+        return checker_to_jump, move_up, move_left;
       else:
         if self.board[move_up][move_right] == self.FREE_SPACE or \
             self.get_checker_obj_from_index(move_up, move_right).color == checker.color:
           return False;
         checker_to_jump = self.get_checker_obj_from_index(move_up, move_right);
+        return checker_to_jump, move_up, move_right;
     else:
       if left:
         if self.board[move_down][move_left] == self.FREE_SPACE or \
             self.get_checker_obj_from_index(move_down, move_left).color == checker.color:
           return False;
         checker_to_jump = self.get_checker_obj_from_index(move_down, move_left);
+        return checker_to_jump, move_down, move_left;
       else:
         if self.board[move_down][move_right] == self.FREE_SPACE or \
             self.get_checker_obj_from_index(move_down, move_right).color == checker.color:
           return False;
         checker_to_jump = self.get_checker_obj_from_index(move_down, move_right);
-    return checker_to_jump;
+        return checker_to_jump, move_down, move_right;
+
 
   # makes a deepcopy of the board passed in
   def CopyBoard(self):
@@ -185,13 +225,18 @@ class Board:
   # print a board in the way we expect to see it
   def PrintBoard(self):
     copy = self.board[::-1]
+    print(''); # new line to make new board obvious
     for each in copy:
       print(each)
 
 if __name__ == '__main__': # for debugging this file
   x = Board();
   x.InitializeBoard();
-  x.Move('B8', 3,1)
+  x.PrintBoard();
+  x.Move('R0', 4,2);
+  x.PrintBoard();
+  x.Move('R0',3,3)
+  x.PrintBoard();
+  x.Move('B9',4,4)
   x.PrintBoard();
   print(x.IsSpaceOpen(3,1))
-  print(x.CHECKERS)
