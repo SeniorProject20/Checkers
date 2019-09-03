@@ -65,8 +65,10 @@ class Board:
           else:
             return False;
       else:
+        print('Your move to selection was not a free space.');
         return False;
     else:
+      print('Your move to selection was not a valid space.');
       return False;
 
   # proforms a free space move
@@ -76,25 +78,31 @@ class Board:
         if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
           return True;
         else:
+          print('Your column selection was wrong.');
           return False;
       else:
+        print('Your row selection was wrong.');
         return False;
     elif checker_obj.color == 'black':
       if (new_row == current_row + 1):
         if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
           return True;
         else:
+          print('Your column selection was wrong.');
           return False;
       else:
+        print('Your row selection was wrong.');
         return False;
     elif checker_obj.color == 'red':
       if (new_row == (current_row - 1)):
         if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
           return True;
+        else:
+          print('Your column selection was wrong.');
+          return False;
       else:
+        print('Your row selection was wrong.');
         return False;
-    else:
-      return False;
 
   # checks to see if a legal jump is possible
   def check_jump_move(self, checker_obj, current_row, current_column, new_row, new_column):
@@ -116,8 +124,10 @@ class Board:
               del checker_to_jump;
               return True;
             else:
+              print('Your column selection was wrong.');
               return False;
           else:
+            print('Your row selection was wrong.');
             return False;
         elif checker_obj.color == 'black':
           if (new_row == (current_row + 2)):
@@ -127,8 +137,10 @@ class Board:
               del checker_to_jump;
               return True;
             else:
+              print('Your column selection was wrong.');
               return False;
           else:
+            print('Your row selection was wrong.');
             return False;
         elif checker_obj.color == 'red':
           if (new_row == (current_row - 2)):
@@ -138,14 +150,19 @@ class Board:
               del checker_to_jump;
               return True;
             else:
+              print('Your column selection was wrong.');
               return False;
           else:
+            print('Your row selection was wrong.');
             return False;
         else:
+          print('Bad color arg.')
           return False;
       else:
+        print('Cannot jump your own color.');
         return False;
     else:
+      print('checker_to_jump = False.');
       return False;
 
   # gets the obj of the checker that is to be jumped based on coordinates
