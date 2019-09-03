@@ -13,13 +13,13 @@ class Board:
   def __init__(self):
     self.board = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
-    self.CHECKERS = {};
+    self.CHECKERS = {}; # key: name, value: object
 
   # creates a board set to begin play
   def InitializeBoard(self):
     self.mark_invalid_spaces();
     self.set_pieces_to_default();
-    self.PrintBoard();
+    # self.PrintBoard();
 
   # mark invalid spaces
   def mark_invalid_spaces(self):
@@ -45,6 +45,7 @@ class Board:
       self.board[current_row][current_column] = self.FREE_SPACE;
       if (new_row == 0 and checker_obj.color == 'red') or (new_row == 7 and checker_obj.color == 'black'):
         checker_obj.KingMe();
+      self.PrintBoard();
       return True;
     else:
       return False;
@@ -236,12 +237,8 @@ if __name__ == '__main__': # for debugging this file
   x = Board();
   x.InitializeBoard();
   x.Move('R0', 4,2);
-  x.PrintBoard();
   x.Move('R0',3,3)
-  x.PrintBoard();
   x.Move('B9',4,4)
-  x.PrintBoard();
   x.Move('R1',3,5)
-  x.PrintBoard();
   print(x.IsSpaceOpen(3,1))
   print(x.CHECKERS)
