@@ -19,37 +19,43 @@ class Game:
 
   # Getting the checker to move from input
   def get_checker_to_move(self, caption):
-    piece = input(caption).upper();
-    if piece in b.CHECKERS:
-      if (self.AI_TURN) and (piece.startswith('R')):  # AI can't move Red pieces
-        print("Player 2 can't move Red pieces"); # take out with real AI
-        return None;
-      elif (not self.AI_TURN) and (piece.startswith('B')):  # Player can't move Black pieces
-        print("Player 1 can't move Black pieces");
-        return None;
+    try:
+      piece = input(caption).upper();
+      if piece in b.CHECKERS:
+        if (self.AI_TURN) and (piece.startswith('R')):  # AI can't move Red pieces
+          print("Player 2 can't move Red pieces"); # take out with real AI
+          return None;
+        elif (not self.AI_TURN) and (piece.startswith('B')):  # Player can't move Black pieces
+          print("Player 1 can't move Black pieces");
+          return None;
+        else:
+          return piece;
       else:
-        return piece;
-    else:
-      print('No piece with that name.')
+        print('No piece with that name.')
+        return None;
+    except (TypeError, ValueError):
       return None;
 
   # Getting where to move from input
   def get_move_to_location(self, b):
-    move = input('Where would you like to move it? (1,8),(A-H): ').upper();
-    row, column  = game.translate_input(move);
-    if b.board[row][column] != b.INVALID_SPACE:
-      if row in range(b.NUM_ROWS):
-        if column in range(b.NUM_COLUMNS):
-          return row, column;
+    try:
+      move = input('Where would you like to move it? (1,8),(A-H): ').upper();
+      row, column  = game.translate_input(move);
+      if b.board[row][column] != b.INVALID_SPACE:
+        if row in range(b.NUM_ROWS):
+          if column in range(b.NUM_COLUMNS):
+            return row, column;
+          else:
+            print('Column outside range.');
+            return None, None;
         else:
-          print('Column outside range.');
-          return None;
+          print('Row outside range.')
+          return None, None;
       else:
-        print('Row outside range.')
-        return None;
-    else:
-      print('Invalid space selected.')
-      return None;
+        print('Invalid space selected.')
+        return None, None;
+    except (TypeError, ValueError, IndexError, KeyError):
+      return None, None;
 
   # is game over ** Look for ways to make this FAST **
   def is_game_over(self, b):
@@ -96,9 +102,11 @@ if __name__ == '__main__':
           print('Invalid move, please try again.');
           game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
       else:
+        print('Invalid move, please try again.');
         game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
     else:
       # this is where AI will go as soon as logic is developed
+
       print("Player 2's turn:");
       piece = game.get_checker_to_move('Which piece would you like to move? (B0-B11)');
       new_row, new_column = None, None;
@@ -111,6 +119,7 @@ if __name__ == '__main__':
           print('Invalid move, please try again');
           game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
       else:
+        print('Invalid move, please try again.');
         game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
     # AI goes above
     if game.is_game_over(b):
