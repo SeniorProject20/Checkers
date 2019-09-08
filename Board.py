@@ -226,15 +226,15 @@ class Board:
     b, r = 0, 0;
     for row in range(self.NUM_ROWS):
       for column in range(self.NUM_COLUMNS):
-        if (row == 3 or row == 4) and not (row + column) % 2:
+        if (row == 3 or row == 4) and not (self.board[row][column] == self.INVALID_SPACE):
           name = self.FREE_SPACE;
         else:
-          if row < 3 and b < self.NUM_BLACK and not (row + column) % 2:
+          if row < 3 and b < self.NUM_BLACK and not (self.board[row][column] == self.INVALID_SPACE):
             name = 'B' + str(b);
             ref = Checker('black', name);
             self.CHECKERS[name] = ref;
             b += 1;
-          elif row > 4 and r < self.NUM_RED and not (row + column) % 2:
+          elif row > 4 and r < self.NUM_RED and not (self.board[row][column] == self.INVALID_SPACE):
             name = 'R' + str(r);
             ref = Checker('red', name);
             self.CHECKERS[name] = ref;
@@ -259,3 +259,9 @@ if __name__ == '__main__': # for debugging this file
   x.Move('R1',3,5)
   print(x.IsSpaceOpen(3,1))
   print(x.CHECKERS)
+
+# I will pass down [current_row, current_column, new_row, new_column] to Tyson's board to move piece with steppers.
+# Develop AI based on current board, then move to look ahead algorithm.
+# Meet on the 28th to get our presentations in order.
+# Need to put in multi-jump method
+# Need to check that all jumps are taken as required.

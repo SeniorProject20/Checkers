@@ -83,6 +83,10 @@ class Game:
     elif b == 0:
       return 'Red';
 
+  # finds the best move given current board state
+  def find_best_move(self, board):
+    pass
+
 
 if __name__ == '__main__':
   game = Game();
@@ -106,7 +110,7 @@ if __name__ == '__main__':
         game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
     else:
       # this is where AI will go as soon as logic is developed
-
+      # board = game.find_best_move(b);
       print("Player 2's turn:");
       piece = game.get_checker_to_move('Which piece would you like to move? (B0-B11)');
       new_row, new_column = None, None;
