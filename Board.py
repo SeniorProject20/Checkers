@@ -19,7 +19,7 @@ class Board:
   def InitializeBoard(self):
     self.mark_invalid_spaces();
     self.set_pieces_to_default();
-    # self.PrintBoard();
+    self.PrintBoard();
 
   # mark invalid spaces
   def mark_invalid_spaces(self):
@@ -60,7 +60,7 @@ class Board:
           else:
             return False;
         else:
-          if self.check_jump_move(checker_obj, current_row, current_column, new_row, new_column):
+          if self.check_single_jump_move(checker_obj, current_row, current_column, new_row, new_column):
             return True;
           else:
             return False;
@@ -105,7 +105,7 @@ class Board:
         return False;
 
   # checks to see if a legal jump is possible
-  def check_jump_move(self, checker_obj, current_row, current_column, new_row, new_column):
+  def check_single_jump_move(self, checker_obj, current_row, current_column, new_row, new_column):
     move_left, move_forward = True, True;
     if new_column > current_column:
       move_left = False;
@@ -253,6 +253,8 @@ class Board:
 if __name__ == '__main__': # for debugging this file
   x = Board();
   x.InitializeBoard();
+  # for each in x.CHECKERS:
+  #   print(each)
   x.Move('R0', 4,2);
   x.Move('R0',3,3)
   x.Move('B9',4,4)

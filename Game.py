@@ -1,6 +1,6 @@
-from Board import Board;
-from Checker import Checker;
-import numpy as np;
+# from Board import Board;
+# from Checker import Checker;
+# from AI import AI;
 
 
 class Game:
@@ -83,34 +83,39 @@ class Game:
     elif b == 0:
       return 'Red';
 
-  # finds the best move given current board state
-  def find_best_move(self, board):
+  # Lets the player select the
+  def select_move_from_list(self, list):
     pass
+    # something like this to pop the list 'Checker({},{})'.format(self.color, self.name);
 
 
 if __name__ == '__main__':
   game = Game();
+  ai = AI();
   b = Board();
   b.InitializeBoard();
   while not game.GAME_OVER:
     if not game.AI_TURN: # Players turn
       print("Player 1's turn:");
-      piece = game.get_checker_to_move('Which piece would you like to move? (R0-R11)');
-      new_row, new_column = None, None;
-      if piece != None:
-        new_row, new_column = game.get_move_to_location(b);
-      if new_row != None and new_column != None: #  if no error in input
-        if b.Move(piece, new_row, new_column):
-          pass;
+      jump = ai.IsJumpPossible();
+      if jump != []:
+        game.select_move_from_list(jump);
+      else:
+        piece = game.get_checker_to_move('Which piece would you like to move? (R0-R11)');
+        new_row, new_column = None, None;
+        if piece != None:
+          new_row, new_column = game.get_move_to_location(b);
+        if new_row != None and new_column != None: #  if no error in input
+          if b.Move(piece, new_row, new_column):
+            pass;
+          else:
+            print('Invalid move, please try again.');
+            game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
         else:
           print('Invalid move, please try again.');
           game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
-      else:
-        print('Invalid move, please try again.');
-        game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
     else:
       # this is where AI will go as soon as logic is developed
-      # board = game.find_best_move(b);
       print("Player 2's turn:");
       piece = game.get_checker_to_move('Which piece would you like to move? (B0-B11)');
       new_row, new_column = None, None;
