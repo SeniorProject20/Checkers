@@ -1,6 +1,6 @@
-# from Board import Board;
-# from Checker import Checker;
-# from AI import AI;
+from Board import Board;
+from Checker import Checker;
+from AI import AI;
 
 
 class Game:
@@ -97,9 +97,10 @@ if __name__ == '__main__':
   while not game.GAME_OVER:
     if not game.AI_TURN: # Players turn
       print("Player 1's turn:");
-      jump = ai.IsJumpPossible();
+      jump = ai.IsJumpPossible(game.AI_TURN, b);
       if jump != []:
         game.select_move_from_list(jump);
+        jump = [];
       else:
         piece = game.get_checker_to_move('Which piece would you like to move? (R0-R11)');
         new_row, new_column = None, None;

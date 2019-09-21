@@ -1,8 +1,8 @@
 ## Scratch paper file to try functions
-import numpy as np;
 from Checker import Checker;
 from Board import Board;
 from Game import Game;
+from AI import AI;
 
 # import itertools
 # import pygame as pg
@@ -56,11 +56,3 @@ print(type(0))
 #     moves.append(row - 2, column + 2);
 # elif d_r == 0:
 #   moves.append(row - 1, column + 1);
-
-# while holder != []:
-#   poss_moves.append(holder);
-#   holder = self.CanCheckerJump(checker);
-
-i=[1]
-while i !=[]:
-  i.append(1)

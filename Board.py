@@ -197,6 +197,7 @@ class Board:
 
   # makes a deepcopy of the board passed in
   def CopyBoard(self):
+    new_board = Board();
     new_board = copy.deepcopy(self);
     return new_board;
 
