@@ -10,12 +10,17 @@ class Game:
   COLUMN_KEY = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7};
 
   # Converting column name to 0-7 index
-  def translate_input(self, input):
+  def translate_input_to_zero_base(self, input):
     split_in = str(input).split(',');
     column = split_in[1];
     column = self.COLUMN_KEY[column];
     row = int(split_in[0]) - 1;
     return row, column;
+
+  def translate_list_to_board(self, input):
+    row = input[0] + 1;
+    column = list(self.COLUMN_KEY.keys())[list(self.COLUMN_KEY.values()).index(input[1])]
+    return [row, column];
 
   # Getting the checker to move from input
   def get_checker_to_move(self, caption):
@@ -84,23 +89,38 @@ class Game:
       return 'Red';
 
   # Lets the player select the
-  def select_move_from_list(self, list):
-    pass
-    # something like this to pop the list 'Checker({},{})'.format(self.color, self.name);
-
+  def select_move_from_list(self, in_list):
+    i = 1;
+    try:
+      print('Which move would you like to make:');
+      for each in in_list:
+        print('{}: Move {} to {}'.format(str(i), each[0], str(self.translate_list_to_board(each[1])).replace("'", '')));
+        i += 1;
+      move = input('Which move would you like to make? (1 - ' + str(len(in_list)) + ')');
+      return in_list[int(move)];
+    except (IndexError):
+      pass;
 
 if __name__ == '__main__':
   game = Game();
   ai = AI();
   b = Board();
   b.InitializeBoard();
+  # b.Move('B9', 3, 1);
+  # b.Move('B9', 4, 2);
+  # b.Move('B10', 3, 3);
+  # b.Move('B10', 4, 4);
+  # b.Move('B6', 2, 4);
+  # b.Move('B5', 2, 2);
   while not game.GAME_OVER:
     if not game.AI_TURN: # Players turn
       print("Player 1's turn:");
       jump = ai.IsJumpPossible(game.AI_TURN, b);
       if jump != []:
-        game.select_move_from_list(jump);
-        jump = [];
+        selected = game.select_move_from_list(jump);
+        r = selected[1][0];
+        c = selected[1][1];
+        b.Move(selected[0], r, c);
       else:
         piece = game.get_checker_to_move('Which piece would you like to move? (R0-R11)');
         new_row, new_column = None, None;
@@ -118,19 +138,26 @@ if __name__ == '__main__':
     else:
       # this is where AI will go as soon as logic is developed
       print("Player 2's turn:");
-      piece = game.get_checker_to_move('Which piece would you like to move? (B0-B11)');
-      new_row, new_column = None, None;
-      if piece != None:
-        new_row, new_column = game.get_move_to_location(b);
-      if new_row != None and new_column != None:  # if no error in input
-        if b.Move(piece, new_row, new_column):
-          pass;
-        else:
-          print('Invalid move, please try again');
-          game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
+      jump = ai.IsJumpPossible(game.AI_TURN, b);
+      if jump != []:
+        selected = game.select_move_from_list(jump);
+        r = selected[1][0];
+        c = selected[1][1];
+        b.Move(selected[0], r, c);
       else:
-        print('Invalid move, please try again.');
-        game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
+        piece = game.get_checker_to_move('Which piece would you like to move? (B0-B11)');
+        new_row, new_column = None, None;
+        if piece != None:
+          new_row, new_column = game.get_move_to_location(b);
+        if new_row != None and new_column != None:  # if no error in input
+          if b.Move(piece, new_row, new_column):
+            pass;
+          else:
+            print('Invalid move, please try again');
+            game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
+        else:
+          print('Invalid move, please try again.');
+          game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
     # AI goes above
     if game.is_game_over(b):
       winner = game.who_won(b);

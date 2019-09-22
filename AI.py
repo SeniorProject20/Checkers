@@ -5,8 +5,31 @@ from Checker import Checker;
 class AI:
 
   # Looks at possible boards and selects best one
-  def GetBestMove(self):
+  def ChooseBestMove(self):
     pass
+
+  # local function to keep track of all jumps possible by a checker
+  def get_all_jumps(self, board_obj, checker, poss_moves):
+    poss_jumps_list, spot, multi = [], [], False;
+    poss_jumps_list = self.CanCheckerJump(board_obj, checker);
+    for each in poss_jumps_list:
+      new_board = board_obj.CopyBoard();
+      new_board.Move(checker, each[0], each[1]);
+      next_jump = self.CanCheckerJump(new_board, checker);
+      while next_jump != []:
+        multi = True;
+        new_board = new_board.CopyBoard();
+        new_board.Move(checker, next_jump[0][0], next_jump[0][1]);
+        current_jump = next_jump[0];
+        next_jump = [];
+        next_jump = self.CanCheckerJump(new_board, checker);
+      if multi:
+        spot = [current_jump[0], current_jump[1]];
+      else:
+        spot = [each[0], each[1]];
+      poss_moves.append([checker, spot, new_board]);
+      multi = False;
+    return poss_moves;
 
   # determines if there is a jump possible for the current move
   def IsJumpPossible(self, ai_turn, board_obj):
@@ -14,23 +37,16 @@ class AI:
     try:
       if ai_turn:
         for checker in board_obj.CHECKERS:
-          holder = [];
+          poss_jumps_list, spot, multi = [], [], False;
           if checker.startswith('B'):
-            holder = self.CanCheckerJump(board_obj, checker);
-            if holder != []:
-              new_board = self.CreateandCopyExistingBoard(board_obj);
-              poss_moves.append(checker, holder);
+            poss_moves = self.get_all_jumps(board_obj, checker, poss_moves);
       else:
         for checker in board_obj.CHECKERS:
-          holder = [];
           if checker.startswith('R'):
-            holder = self.CanCheckerJump(board_obj, checker);
-            if holder != []:
-              new_board = self.CreateandCopyExistingBoard(board_obj);
-              poss_moves.append(checker, holder);
+            poss_moves = self.get_all_jumps(board_obj, checker, poss_moves);
       return poss_moves;
-    except (IndexError):
-      pass
+    except (IndexError) as e:
+      print(e);
 
   # determins if a given checker can move or if it is trapped
   def CanCheckerMove(self, board_obj, checker):
@@ -108,44 +124,44 @@ class AI:
       if checker_obj.isKing:
         if row < 6 and column < 6:
           u_r = board_obj.board[row + 1][column + 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_r, 1, 1);
+          dest = self.dest_jump_check(board_obj, checker_obj, u_r, 1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row > 1 and column < 6:
           d_r = board_obj.board[row - 1][column + 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, d_r, -1, 1);
+          dest = self.dest_jump_check(board_obj, checker_obj, d_r, -1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row < 6 and column > 1:
           u_l = board_obj.board[row + 1][column - 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_l, 1, -1);
+          dest = self.dest_jump_check(board_obj, checker_obj, u_l, 1, -1, row, column);
           if dest != None:
             moves.append(dest);
         if row > 1 and column > 1:
           d_l = board_obj.board[row - 1][column - 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, d_l, -1, -1);
+          dest = self.dest_jump_check(board_obj, checker_obj, d_l, -1, -1, row, column);
           if dest != None:
             moves.append(dest);
       elif checker_obj.color == 'Black':
         if row < 6 and column < 6:
           u_r = board_obj.board[row + 1][column + 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_r, 1, 1);
+          dest = self.dest_jump_check(board_obj, checker_obj, u_r, 1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row < 6 and column > 1:
           u_l = board_obj.board[row + 1][column - 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_l, 1, -1);
+          dest = self.dest_jump_check(board_obj, checker_obj, u_l, 1, -1, row, column);
           if dest != None:
             moves.append(dest);
       else:
         if row > 1 and column < 6:
           d_r = board_obj.board[row - 1][column + 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, d_r, -1, 1);
+          dest = self.dest_jump_check(board_obj, checker_obj, d_r, -1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row > 1 and column > 1:
           d_l = board_obj.board[row - 1][column - 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, d_l, -1, -1);
+          dest = self.dest_jump_check(board_obj, checker_obj, d_l, -1, -1, row, column);
           if dest != None:
             moves.append(dest);
       return moves;
@@ -153,16 +169,14 @@ class AI:
       pass
     
   # verifies the jump is legal for CanCheckerMove
-  def dest_jump_check(self, board_obj, checker_obj, space, v, h):
+  def dest_jump_check(self, board_obj, checker_obj, space, v, h, row, column):
     if type(space) == str:
-      checker_to_jump_obj = board_obj.get_checker_obj_from_index(v, h)
-      if checker_to_jump_obj.color != checker_obj.color and board_obj.board[row + (v * 2)][column + (h * 2)] == board_obj.FREE_SPACE:
-        return row + (v * 2), column + (h * 2);
+      checker_to_jump_obj = board_obj.get_checker_object_from_name(space);
+      if checker_to_jump_obj.color != checker_obj.color and board_obj.board[row + (v * 2)][column + (h * 2)] == Board.FREE_SPACE:
+        new_r = row + (v * 2);
+        new_col = column + (h * 2);
+        return new_r, new_col;
       else:
         return None;
     else:
       return None;
-
-  def CreateandCopyExistingBoard(self, board_obj):
-    new_board = board_obj.CopyBoard();
-    return new_board;

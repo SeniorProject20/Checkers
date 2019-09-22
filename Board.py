@@ -257,11 +257,11 @@ if __name__ == '__main__': # for debugging this file
   # for each in x.CHECKERS:
   #   print(each)
   x.Move('R0', 4,2);
-  x.Move('R0',3,3)
-  x.Move('B9',4,4)
-  x.Move('R1',3,5)
-  print(x.IsSpaceOpen(3,1))
-  print(x.CHECKERS)
+  x.Move('R0',3,3);
+  x.Move('B9',4,4);
+  x.Move('R1',3,5);
+  print(x.IsSpaceOpen(3,1));
+  print(x.CHECKERS);
 
 # I will pass down [current_row, current_column, new_row, new_column] to Tyson's board to move piece with steppers.
 # Develop AI based on current board, then move to look ahead algorithm.
