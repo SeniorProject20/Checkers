@@ -45,7 +45,7 @@ class Game:
   def get_move_to_location(self, b):
     try:
       move = input('Where would you like to move it? (1,8),(A-H): ').upper();
-      row, column  = game.translate_input(move);
+      row, column  = game.translate_input_to_zero_base(move);
       if b.board[row][column] != b.INVALID_SPACE:
         if row in range(b.NUM_ROWS):
           if column in range(b.NUM_COLUMNS):
@@ -92,12 +92,18 @@ class Game:
   def select_move_from_list(self, in_list):
     i = 1;
     try:
+      # poss_moves.append([checker, spot, pieces_to_jump, new_board]); How the packet is stuffed
       print('Which move would you like to make:');
       for each in in_list:
-        print('{}: Move {} to {}'.format(str(i), each[0], str(self.translate_list_to_board(each[1])).replace("'", '')));
+        place = str(self.translate_list_to_board(each[1])).replace("'", '');
+        pieces = str(each[2]).replace("'", '');
+        pieces = pieces.replace('[', '');
+        pieces = pieces.replace(']', '');
+        pieces = pieces.replace(',', ' &');
+        print('{}: Move {} to {} jumping {}'.format(str(i), each[0], place, pieces));
         i += 1;
       move = input('Which move would you like to make? (1 - ' + str(len(in_list)) + ')');
-      return in_list[int(move)];
+      return in_list[int(move) - 1];
     except (IndexError):
       pass;
 
@@ -106,21 +112,20 @@ if __name__ == '__main__':
   ai = AI();
   b = Board();
   b.InitializeBoard();
-  # b.Move('B9', 3, 1);
-  # b.Move('B9', 4, 2);
-  # b.Move('B10', 3, 3);
-  # b.Move('B10', 4, 4);
-  # b.Move('B6', 2, 4);
-  # b.Move('B5', 2, 2);
+  b.Move('B9', 3, 1);
+  b.Move('B9', 4, 2);
+  b.Move('B10', 3, 3);
+  b.Move('B10', 4, 4);
+  b.Move('B6', 2, 4);
+  b.Move('B5', 2, 2);
   while not game.GAME_OVER:
     if not game.AI_TURN: # Players turn
       print("Player 1's turn:");
       jump = ai.IsJumpPossible(game.AI_TURN, b);
       if jump != []:
         selected = game.select_move_from_list(jump);
-        r = selected[1][0];
-        c = selected[1][1];
-        b.Move(selected[0], r, c);
+        b = selected[3];
+        b.PrintBoard();
       else:
         piece = game.get_checker_to_move('Which piece would you like to move? (R0-R11)');
         new_row, new_column = None, None;
@@ -141,9 +146,8 @@ if __name__ == '__main__':
       jump = ai.IsJumpPossible(game.AI_TURN, b);
       if jump != []:
         selected = game.select_move_from_list(jump);
-        r = selected[1][0];
-        c = selected[1][1];
-        b.Move(selected[0], r, c);
+        b = selected[3];
+        b.PrintBoard();
       else:
         piece = game.get_checker_to_move('Which piece would you like to move? (B0-B11)');
         new_row, new_column = None, None;

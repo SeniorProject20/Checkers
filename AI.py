@@ -10,15 +10,17 @@ class AI:
 
   # local function to keep track of all jumps possible by a checker
   def get_all_jumps(self, board_obj, checker, poss_moves):
-    poss_jumps_list, spot, multi = [], [], False;
+    poss_jumps_list, pieces_to_jump, spot, multi = [], [], [], False;
     poss_jumps_list = self.CanCheckerJump(board_obj, checker);
     for each in poss_jumps_list:
       new_board = board_obj.CopyBoard();
       new_board.Move(checker, each[0], each[1]);
+      pieces_to_jump.append(each[2]);
       next_jump = self.CanCheckerJump(new_board, checker);
       while next_jump != []:
         multi = True;
         new_board = new_board.CopyBoard();
+        pieces_to_jump.append(next_jump[0][2]);
         new_board.Move(checker, next_jump[0][0], next_jump[0][1]);
         current_jump = next_jump[0];
         next_jump = [];
@@ -27,8 +29,9 @@ class AI:
         spot = [current_jump[0], current_jump[1]];
       else:
         spot = [each[0], each[1]];
-      poss_moves.append([checker, spot, new_board]);
+      poss_moves.append([checker, spot, pieces_to_jump, new_board]);
       multi = False;
+      pieces_to_jump = [];
     return poss_moves;
 
   # determines if there is a jump possible for the current move
@@ -175,7 +178,7 @@ class AI:
       if checker_to_jump_obj.color != checker_obj.color and board_obj.board[row + (v * 2)][column + (h * 2)] == Board.FREE_SPACE:
         new_r = row + (v * 2);
         new_col = column + (h * 2);
-        return new_r, new_col;
+        return new_r, new_col, checker_to_jump_obj.name;
       else:
         return None;
     else:

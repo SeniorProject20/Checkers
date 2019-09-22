@@ -45,7 +45,7 @@ class Board:
       self.board[current_row][current_column] = self.FREE_SPACE;
       if (new_row == 0 and checker_obj.color == 'red') or (new_row == 7 and checker_obj.color == 'black'):
         checker_obj.KingMe();
-      self.PrintBoard();
+      # self.PrintBoard();
       return True;
     else:
       return False;
