@@ -40,7 +40,6 @@ class AI:
     try:
       if ai_turn:
         for checker in board_obj.CHECKERS:
-          poss_jumps_list, spot, multi = [], [], False;
           if checker.startswith('B'):
             poss_moves = self.get_all_jumps(board_obj, checker, poss_moves);
       else:
@@ -145,7 +144,7 @@ class AI:
           dest = self.dest_jump_check(board_obj, checker_obj, d_l, -1, -1, row, column);
           if dest != None:
             moves.append(dest);
-      elif checker_obj.color == 'Black':
+      elif checker_obj.color == 'black':
         if row < 6 and column < 6:
           u_r = board_obj.board[row + 1][column + 1];
           dest = self.dest_jump_check(board_obj, checker_obj, u_r, 1, 1, row, column);
@@ -173,7 +172,7 @@ class AI:
     
   # verifies the jump is legal for CanCheckerMove
   def dest_jump_check(self, board_obj, checker_obj, space, v, h, row, column):
-    if type(space) == str:
+    if str(space).startswith('R') or str(space).startswith('B'): # was if type(space) == str:
       checker_to_jump_obj = board_obj.get_checker_object_from_name(space);
       if checker_to_jump_obj.color != checker_obj.color and board_obj.board[row + (v * 2)][column + (h * 2)] == Board.FREE_SPACE:
         new_r = row + (v * 2);

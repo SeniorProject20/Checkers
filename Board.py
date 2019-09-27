@@ -7,8 +7,9 @@ class Board:
   NUM_COLUMNS = 8;
   NUM_BLACK = 12;
   NUM_RED = 12;
-  FREE_SPACE = 0;
+  FREE_SPACE = '000';
   INVALID_SPACE = None;
+  MOVES_WITHOUT_JUMP = 0;
 
   def __init__(self):
     self.board = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
@@ -45,7 +46,7 @@ class Board:
       self.board[current_row][current_column] = self.FREE_SPACE;
       if (new_row == 0 and checker_obj.color == 'red') or (new_row == 7 and checker_obj.color == 'black'):
         checker_obj.KingMe();
-      # self.PrintBoard();
+      self.PrintBoard();
       return True;
     else:
       return False;
@@ -56,11 +57,13 @@ class Board:
       if self.board[new_row][new_column] == self.FREE_SPACE:
         if abs(current_row - new_row) < 2:
           if self.check_free_space_move(checker_obj, current_row, current_column, new_row, new_column):
+            self.MOVES_WITHOUT_JUMP += 1;
             return True;
           else:
             return False;
         else:
           if self.check_single_jump_move(checker_obj, current_row, current_column, new_row, new_column):
+            self.MOVES_WITHOUT_JUMP = 0;
             return True;
           else:
             return False;
