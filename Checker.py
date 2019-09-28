@@ -10,7 +10,7 @@ class Checker:
   def KingMe(self):
     if not self.isKing:
       self.isKing = True;
-      return '{} was Kinged!\n'.format(self.name);
+      return '{} was Kinged!'.format(self.name);
     else:
       return '';
 

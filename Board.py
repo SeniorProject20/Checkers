@@ -211,12 +211,11 @@ class Board:
     current_row, current_column = 0, 0;
     for i in range(len(self.board)):
       try:
-        column = self.board[i].index(name);
+        current_column = self.board[i].index(name);
         current_row = i;
-        current_column = column;
         return current_row, current_column;
       except (ValueError) as e:
-        pass
+        pass; # print(str(e));
 
   # given a checker name, return the object
   def get_checker_object_from_name(self, name):
@@ -268,6 +267,7 @@ class Board:
     if self.PRINT_QUEUE != '':
       print(self.PRINT_QUEUE);
       self.PRINT_QUEUE = '';
+    print('');
 
   # Trying jump 5
   def InitRiggedBoard1(self):

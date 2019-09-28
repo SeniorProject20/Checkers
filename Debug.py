@@ -1,8 +1,8 @@
 ## Scratch paper file to try functions
-from Checker import Checker;
-from Board import Board;
-from Game import Game;
-from LookAhead import CheckJumps;
+# from Checker import Checker;
+# from Board import Board;
+# from Game import Game;
+# from LookAhead import CheckJumps;
 
 # import itertools
 # import pygame as pg
@@ -13,7 +13,7 @@ from LookAhead import CheckJumps;
 # BLACK = pg.Color('black')
 # WHITE = pg.Color('white')
 #
-# screen = pg.display.set_mode((800, 600))
+# screen = pg.display.set_mode((700, 700))
 # clock = pg.time.Clock()
 #
 # colors = itertools.cycle((WHITE, BLACK))
@@ -25,7 +25,7 @@ from LookAhead import CheckJumps;
 #     for x in range(0, width, tile_size):
 #       rect = (x, y, tile_size, tile_size)
 #       pg.draw.rect(background, next(colors), rect)
-#   next(colors)
+#     next(colors)
 #
 # game_exit = False
 # while not game_exit:
@@ -77,3 +77,20 @@ from LookAhead import CheckJumps;
 #       poss_moves.append([checker, spot, new_board]);
 #       multi = False;
 # return poss_moves;
+
+# # given a checker name, return the index for self.board
+# def get_checker_index_from_name(self, name):
+#   current_row, current_column = 0, 0;
+#   num = re.findall('[0-9]', name);
+#   num = int(num[0]);
+#   for i in range(len(self.board)):
+#     try:
+#       if num > 9:
+#         current_column = self.board[i].index(name);
+#       else:
+#         current_column = self.board[i].index(name + ' ');
+#       current_row = i;
+#       return current_row, current_column;
+#     except (ValueError) as e:
+#       pass;  # print(str(e));
+
