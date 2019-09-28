@@ -1,8 +1,7 @@
 from Board import Board;
 from Checker import Checker;
-# from Game import Game;
 
-class AI:
+class CheckJumps:
 
   # Looks at possible boards and selects best one
   def ChooseBestMove(self):

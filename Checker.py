@@ -8,7 +8,11 @@ class Checker:
 
   # make a checker a king
   def KingMe(self):
-    self.isKing = True;
+    if not self.isKing:
+      self.isKing = True;
+      return '{} was Kinged!\n'.format(self.name);
+    else:
+      return '';
 
   # repr for and checker
   def __repr__(self):

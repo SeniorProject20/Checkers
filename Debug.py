@@ -2,7 +2,7 @@
 from Checker import Checker;
 from Board import Board;
 from Game import Game;
-from AI import AI;
+from LookAhead import CheckJumps;
 
 # import itertools
 # import pygame as pg

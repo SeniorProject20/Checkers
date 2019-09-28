@@ -10,6 +10,7 @@ class Board:
   FREE_SPACE = '000';
   INVALID_SPACE = None;
   MOVES_WITHOUT_JUMP = 0;
+  PRINT_QUEUE = '';
 
   def __init__(self):
     self.board = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
@@ -45,7 +46,7 @@ class Board:
       self.board[new_row][new_column] = checker_name;
       self.board[current_row][current_column] = self.FREE_SPACE;
       if (new_row == 0 and checker_obj.color == 'red') or (new_row == 7 and checker_obj.color == 'black'):
-        checker_obj.KingMe();
+        self.PRINT_QUEUE = checker_obj.KingMe();
       if print:
         self.PrintBoard();
       return True;
@@ -235,12 +236,18 @@ class Board:
           name = self.FREE_SPACE;
         else:
           if row < 3 and b < self.NUM_BLACK and not (self.board[row][column] == self.INVALID_SPACE):
-            name = 'B' + str(b);
+            if b < 10:
+              name = 'B' + str(b) + ' ';
+            else:
+              name = 'B' + str(b);
             ref = Checker('black', name);
             self.CHECKERS[name] = ref;
             b += 1;
           elif row > 4 and r < self.NUM_RED and not (self.board[row][column] == self.INVALID_SPACE):
-            name = 'R' + str(r);
+            if r < 10:
+              name = 'R' + str(r) + ' ';
+            else:
+              name = 'R' + str(r);
             ref = Checker('red', name);
             self.CHECKERS[name] = ref;
             r += 1;
@@ -250,10 +257,17 @@ class Board:
 
   # print a board in the way we expect to see it
   def PrintBoard(self):
+    i, header = 8, '    A      B     C      D      E     F      G     H';
     copy = self.board[::-1]
     print(''); # new line to make new board obvious
+    print(header)
     for each in copy:
-      print(each)
+      print('{} {} {}'.format(str(i), each, str(i)));
+      i -= 1;
+    print(header);
+    if self.PRINT_QUEUE != '':
+      print(self.PRINT_QUEUE);
+      self.PRINT_QUEUE = '';
 
   # Trying jump 5
   def InitRiggedBoard1(self):
@@ -390,8 +404,8 @@ class Board:
 if __name__ == '__main__': # for debugging this file
   x = Board();
   x.InitializeBoard();
-  # for each in x.CHECKERS:
-  #   print(each)
+  for each in x.CHECKERS:
+    print(each)
   x.Move('R0', 4,2);
   x.Move('R0',3,3);
   x.Move('B9',4,4);
@@ -400,7 +414,3 @@ if __name__ == '__main__': # for debugging this file
   print(x.CHECKERS);
 
 # I will pass down [current_row, current_column, new_row, new_column] to Tyson's board to move piece with steppers.
-# Develop AI based on current board, then move to look ahead algorithm.
-# Meet on the 28th to get our presentations in order.
-# Need to put in multi-jump method
-# Need to check that all jumps are taken as required.

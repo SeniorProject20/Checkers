@@ -1,7 +1,7 @@
 import time;
 from Board import Board;
 from Checker import Checker;
-from AI import AI;
+from LookAhead import CheckJumps;
 
 
 class Game:
@@ -11,30 +11,34 @@ class Game:
   COLUMN_KEY = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7};
 
   #test cases
-  def test_cases(self, b_obj):
-    # b_obj.Move('B9', 3, 1);
-    # b_obj.Move('B9', 4, 2);
-    # b_obj.Move('B10', 3, 3);
-    # b_obj.Move('B10', 4, 4);
-    # b_obj.Move('B6', 2, 4);
-    # b_obj.Move('B5', 2, 2, True);
-    # b_obj.InitRiggedBoard1();
-    # b_obj.InitRiggedBoard2();
-    # b_obj.InitRiggedBoard3();
-    b_obj.InitRiggedBoard4();
-    moves = [b_obj.Move('R4', 4, 4), b_obj.Move('R4', 5, 3), b_obj.Move('B0', 2, 4), b_obj.Move('B0', 1, 5)]
-    while True:
-      for each in moves:
-        each;
-      if game.is_game_over(b_obj):
-        winner = game.who_won(b_obj);
-        stop_time = time.time();
-        if winner[0]:
-          print('\n\nGame Over! {} wins!!\n\n'.format(str(winner[1])));
-        else:
-          print('Game is a *Draw*');
-        print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
-        exit(0);
+  def test_cases(self, B_obj):
+    # B_obj.Move('B9', 3, 1);
+    # B_obj.Move('B9', 4, 2);
+    # B_obj.Move('B10', 3, 3);
+    # B_obj.Move('B10', 4, 4);
+    # B_obj.Move('B6', 2, 4);
+    # B_obj.Move('B5', 2, 2, True);
+    ## Trying jump 5
+    # B_obj.InitRiggedBoard1();
+    ## 4 different jumps poss
+    # B_obj.InitRiggedBoard2();
+    ## Checking Kinged message
+    B_obj.InitRiggedBoard3();
+    ## Checking draw game
+    # B_obj.InitRiggedBoard4();
+    # moves = [B_obj.Move('R4', 4, 4), B_obj.Move('R4', 5, 3), B_obj.Move('B0', 2, 4), B_obj.Move('B0', 1, 5)]
+    # while True:
+    #   for each in moves:
+    #     each;
+    #   if game.is_game_over(B_obj):
+    #     winner = game.who_won(B_obj);
+    #     stop_time = time.time();
+    #     if winner[0]:
+    #       print('\n\nGame Over! {} wins!!\n\n'.format(str(winner[1])));
+    #     else:
+    #       print('Game is a *Draw*');
+    #     print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
+    #     exit(0);
 
   # Converting column name to 0-7 index
   def translate_input_to_zero_base(self, input):
@@ -51,10 +55,10 @@ class Game:
     return [row, column];
 
   # Getting the checker to move from input
-  def get_checker_to_move(self, caption, b_obj):
+  def get_checker_to_move(self, caption, B_obj):
     try:
       piece = input(caption).upper();
-      if piece in b_obj.CHECKERS:
+      if piece in B_obj.CHECKERS:
         if (self.AI_TURN) and (piece.startswith('R')):  # AI can't move Red pieces
           print("Player 2 can't move Red pieces"); # take out with real AI
           return None;
@@ -104,10 +108,10 @@ class Game:
       return False;
 
   # Checks who won or draw
-  def who_won(self, b_obj):
+  def who_won(self, B_obj):
     try:
       red, black = 0, 0;
-      for each in b_obj.CHECKERS:
+      for each in B_obj.CHECKERS:
         if each.startswith('R'):
           red += 1;
         else:  # black checker case
@@ -152,78 +156,59 @@ class Game:
 
 if __name__ == '__main__':
   start_time = time.time();
-  game = Game();
-  ai = AI();
-  b_obj = Board();
-  b_obj.InitializeBoard();
-  # game.test_cases(b_obj);
-  while not game.GAME_OVER:
-    if not game.AI_TURN: # Players turn
+  Game = Game();
+  LA = CheckJumps();
+  B_obj = Board();
+  B_obj.InitializeBoard();
+  # Game.test_cases(B_obj);
+  while not Game.GAME_OVER:
+    if not Game.AI_TURN: # Players turn
       print("Player 1's turn:");
-      jump = ai.IsJumpPossible(game.AI_TURN, b_obj);
+      jump = LA.IsJumpPossible(Game.AI_TURN, B_obj);
       if jump != []:
-        selected = game.select_move_from_list(jump);
-        b_obj = selected[3]; # replacing the board object with the updated one from the jump
-        b_obj.MOVES_WITHOUT_JUMP = 0;
-        b_obj.PrintBoard();
+        selected = Game.select_move_from_list(jump);
+        B_obj = selected[3]; # replacing the board object with the updated one from the jump
+        B_obj.MOVES_WITHOUT_JUMP = 0;
+        B_obj.PrintBoard();
       else:
-        piece = game.get_checker_to_move('Which piece would you like to move? (R0-R11)', b_obj);
+        piece = Game.get_checker_to_move('Which piece would you like to move? (R0-R11)', B_obj);
         new_row, new_column = None, None;
         if piece != None:
-          new_row, new_column = game.get_move_to_location(b_obj);
+          new_row, new_column = Game.get_move_to_location(B_obj);
         if new_row != None and new_column != None: #  if no error in input
-          if b_obj.Move(piece, new_row, new_column, True):
+          if B_obj.Move(piece, new_row, new_column, True):
             pass;
           else:
             print('Invalid move, please try again.');
-            game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
+            Game.AI_TURN = not Game.AI_TURN;  # just to reset it to your move again
         else:
           print('Invalid move, please try again.');
-          game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
+          Game.AI_TURN = not Game.AI_TURN;  # just to reset it to your move again
     else:
       # this is where AI will go as soon as logic is developed
       print("Player 2's turn:");
-      jump = ai.IsJumpPossible(game.AI_TURN, b_obj);
+      jump = LA.IsJumpPossible(Game.AI_TURN, B_obj);
       if jump != []:
-        selected = game.select_move_from_list(jump);
-        b_obj = selected[3];
-        b_obj.MOVES_WITHOUT_JUMP = 0;
-        b_obj.PrintBoard();
+        selected = Game.select_move_from_list(jump);
+        B_obj = selected[3];
+        B_obj.MOVES_WITHOUT_JUMP = 0;
+        B_obj.PrintBoard();
       else:
-        piece = game.get_checker_to_move('Which piece would you like to move? (B0-B11)', b_obj);
+        piece = Game.get_checker_to_move('Which piece would you like to move? (B0-B11)', B_obj);
         new_row, new_column = None, None;
         if piece != None:
-          new_row, new_column = game.get_move_to_location(b_obj);
+          new_row, new_column = Game.get_move_to_location(B_obj);
         if new_row != None and new_column != None:  # if no error in input
-          if b_obj.Move(piece, new_row, new_column, True):
+          if B_obj.Move(piece, new_row, new_column, True):
             pass;
           else:
             print('Invalid move, please try again.');
-            game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
+            Game.AI_TURN = not Game.AI_TURN;  # just to reset it to your move again
         else:
           print('Invalid move, please try again.');
-          game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
-      # jump = ai.IsJumpPossible(game.AI_TURN, b_obj);
-      # if jump != []:
-      #   selected = game.select_move_from_list(jump);
-      #   b_obj = selected[3];
-      #   b_obj.PrintBoard();
-      # else:
-      #   piece = game.get_checker_to_move('Which piece would you like to move? (B0-B11)');
-      #   new_row, new_column = None, None;
-      #   if piece != None:
-      #     new_row, new_column = game.get_move_to_location(b_obj);
-      #   if new_row != None and new_column != None:  # if no error in input
-      #     if b_obj.Move(piece, new_row, new_column):
-      #       pass;
-      #     else:
-      #       print('Invalid move, please try again');
-      #       game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
-      #   else:
-      #     print('Invalid move, please try again.');
-      #     game.AI_TURN = not game.AI_TURN;  # just to reset it to your move again
-    if game.is_game_over(b_obj):
-      winner = game.who_won(b_obj);
+          Game.AI_TURN = not Game.AI_TURN;  # just to reset it to your move again
+    if Game.is_game_over(B_obj):
+      winner = Game.who_won(B_obj);
       stop_time = time.time();
       if winner[0]:
         print('\n\nGame Over! {} wins!!\n\n'.format(str(winner[1])));
@@ -231,4 +216,4 @@ if __name__ == '__main__':
         print('Game is a Draw');
       print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
       exit(0);
-    game.AI_TURN = not game.AI_TURN;
+    Game.AI_TURN = not Game.AI_TURN;
