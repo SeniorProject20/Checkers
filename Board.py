@@ -38,7 +38,7 @@ class Board:
       return False;
 
   # move a checker
-  def Move(self, checker_name, new_row, new_column):
+  def Move(self, checker_name, new_row, new_column, print = False):
     current_row, current_column = self.get_checker_index_from_name(checker_name);
     checker_obj = self.get_checker_object_from_name(checker_name);
     if self.is_move_valid(checker_obj, current_row, current_column, new_row, new_column):
@@ -46,7 +46,8 @@ class Board:
       self.board[current_row][current_column] = self.FREE_SPACE;
       if (new_row == 0 and checker_obj.color == 'red') or (new_row == 7 and checker_obj.color == 'black'):
         checker_obj.KingMe();
-      self.PrintBoard();
+      if print:
+        self.PrintBoard();
       return True;
     else:
       return False;
@@ -122,7 +123,7 @@ class Board:
         if checker_obj.isKing:
           if (new_row == (current_row + 2)) or (new_row == (current_row - 2)):
             if (new_column == (current_column + 2)) or (new_column == (current_column - 2)):
-              self.board[r][c] = 0;
+              self.board[r][c] = self.FREE_SPACE;
               self.CHECKERS.pop(checker_to_jump.name);
               del checker_to_jump;
               return True;
@@ -253,6 +254,138 @@ class Board:
     print(''); # new line to make new board obvious
     for each in copy:
       print(each)
+
+  # Trying jump 5
+  def InitRiggedBoard1(self):
+    self.mark_invalid_spaces();
+    name = None;
+    for row in range(self.NUM_ROWS):
+      for column in range(self.NUM_COLUMNS):
+        if self.board[row][column] != self.INVALID_SPACE:
+          name = self.FREE_SPACE;
+        if name != None:
+          self.board[row][column] = name;
+        name = None;
+
+
+    ref = Checker('red', 'R4');
+    self.CHECKERS['R4'] = ref;
+    self.board[6][2] = 'R4';
+
+    ref = Checker('red', 'R9');
+    self.CHECKERS['R9'] = ref;
+    self.board[6][4] = 'R9';
+
+    ref = Checker('red', 'R11');
+    self.CHECKERS['R11'] = ref;
+    self.board[4][2] = 'R11';
+
+    ref = Checker('red', 'R5');
+    self.CHECKERS['R5'] = ref;
+    self.board[3][3] = 'R5';
+
+    ref = Checker('red', 'R8');
+    self.CHECKERS['R8'] = ref;
+    self.board[4][6] = 'R8';
+
+    ref = Checker('black', 'B4');
+    ref.KingMe();
+    self.CHECKERS['B4'] = ref;
+    self.board[1][5] = 'B4';
+    self.PrintBoard();
+
+  # 4 different jumps poss
+  def InitRiggedBoard2(self):
+    self.mark_invalid_spaces();
+    name = None;
+    for row in range(self.NUM_ROWS):
+      for column in range(self.NUM_COLUMNS):
+        if self.board[row][column] != self.INVALID_SPACE:
+          name = self.FREE_SPACE;
+        if name != None:
+          self.board[row][column] = name;
+        name = None;
+
+
+    ref = Checker('red', 'R4');
+    ref.KingMe();
+    self.CHECKERS['R4'] = ref;
+    self.board[4][4] = 'R4';
+
+    ref = Checker('black', 'B0');
+    self.CHECKERS['B0'] = ref;
+    self.board[5][5] = 'B0';
+
+    ref = Checker('black', 'B1');
+    self.CHECKERS['B1'] = ref;
+    self.board[5][3] = 'B1';
+
+    ref = Checker('black', 'B2');
+    self.CHECKERS['B2'] = ref;
+    self.board[3][5] = 'B2';
+
+    ref = Checker('black', 'B3');
+    self.CHECKERS['B3'] = ref;
+    self.board[3][3] = 'B3';
+
+    ref = Checker('black', 'B4');
+    self.CHECKERS['B4'] = ref;
+    self.board[1][5] = 'B4';
+
+    ref = Checker('black', 'B5');
+    self.CHECKERS['B5'] = ref;
+    self.board[5][1] = 'B5';
+
+    self.PrintBoard();
+
+  # Checking Kinged message
+  def InitRiggedBoard3(self):
+    self.mark_invalid_spaces();
+    name = None;
+    for row in range(self.NUM_ROWS):
+      for column in range(self.NUM_COLUMNS):
+        if self.board[row][column] != self.INVALID_SPACE:
+          name = self.FREE_SPACE;
+        if name != None:
+          self.board[row][column] = name;
+        name = None;
+
+
+    ref = Checker('red', 'R4');
+    self.CHECKERS['R4'] = ref;
+    self.board[2][4] = 'R4';
+
+    ref = Checker('black', 'B0');
+    self.CHECKERS['B0'] = ref;
+    self.board[1][5] = 'B0';
+
+    ref = Checker('black', 'B1');
+    self.CHECKERS['B1'] = ref;
+    self.board[1][3] = 'B1';
+
+    self.PrintBoard();
+
+  # Checking draw game
+  def InitRiggedBoard4(self):
+    self.mark_invalid_spaces();
+    name = None;
+    for row in range(self.NUM_ROWS):
+      for column in range(self.NUM_COLUMNS):
+        if self.board[row][column] != self.INVALID_SPACE:
+          name = self.FREE_SPACE;
+        if name != None:
+          self.board[row][column] = name;
+        name = None;
+
+    ref = Checker('red', 'R4');
+    ref.KingMe();
+    self.CHECKERS['R4'] = ref;
+    self.board[5][3] = 'R4';
+
+    ref = Checker('black', 'B0');
+    ref.KingMe();
+    self.CHECKERS['B0'] = ref;
+    self.board[1][5] = 'B0';
 
 if __name__ == '__main__': # for debugging this file
   x = Board();

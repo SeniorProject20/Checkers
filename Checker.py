@@ -9,7 +9,6 @@ class Checker:
   # make a checker a king
   def KingMe(self):
     self.isKing = True;
-    print('{} was Kinged!'.format(self.name));
 
   # repr for and checker
   def __repr__(self):
