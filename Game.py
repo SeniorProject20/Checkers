@@ -12,18 +12,24 @@ class Game:
 
   #test cases
   def test_cases(self, B_obj):
+
+    # Set the board with jumps possible
     B_obj.Move('B9 ', 3, 1);
     B_obj.Move('B9 ', 4, 2);
     B_obj.Move('B10', 3, 3);
     B_obj.Move('B10', 4, 4);
     B_obj.Move('B6 ', 2, 4);
     B_obj.Move('B5 ', 2, 2, True);
+
     ## Trying jump 5
     # B_obj.InitRiggedBoard1();
+
     ## 4 different jumps poss
     # B_obj.InitRiggedBoard2();
+
     ## Checking Kinged message
     # B_obj.InitRiggedBoard3();
+
     ## Checking draw game
     # B_obj.InitRiggedBoard4();
     # moves = [B_obj.Move('R4', 4, 4), B_obj.Move('R4', 5, 3), B_obj.Move('B0', 2, 4), B_obj.Move('B0', 1, 5)]
@@ -39,6 +45,7 @@ class Game:
     #       print('Game is a *Draw*');
     #     print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
     #     exit(0);
+    pass
 
   # Converting column name to 0-7 index
   def translate_input_to_zero_base(self, input):
