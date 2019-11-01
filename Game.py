@@ -202,28 +202,13 @@ if __name__ == '__main__':
           print('Invalid move, please try again.');
           Game_obj.AI_TURN = not Game_obj.AI_TURN;  # just to reset it to your move again
     else:
-      # this is where AI will go as soon as logic is developed
-      print("Player 2's turn:");
-      jump = LA.IsJumpPossible(Game_obj.AI_TURN, B_obj);
-      if jump != []:
-        selected = Game_obj.select_move_from_list(jump);
-        B_obj = selected[3];
-        B_obj.MOVES_WITHOUT_JUMP = 0;
-        B_obj.PrintBoard();
-      else:
-        piece = Game_obj.get_checker_to_move(B_obj);
-        new_row, new_column = None, None;
-        if piece != None:
-          new_row, new_column = Game_obj.get_move_to_location(B_obj);
-        if new_row != None and new_column != None:  # if no error in input
-          if B_obj.Move(piece, new_row, new_column, True):
-            pass;
-          else:
-            print('Invalid move, please try again.');
-            Game_obj.AI_TURN = not Game_obj.AI_TURN;  # just to reset it to your move again
-        else:
-          print('Invalid move, please try again.');
-          Game_obj.AI_TURN = not Game_obj.AI_TURN;  # just to reset it to your move again
+      print("AI's turn:");
+      st = time.time();
+      new_board = LA.IsJumpPossible(Game_obj.AI_TURN, B_obj);
+      B_obj = new_board; #jumped count reset
+      B_obj.PrintBoard();
+      end = time.time()
+      print('calc time: ' + str(end - st));
     if Game_obj.is_game_over(B_obj):
       winner = Game_obj.who_won(B_obj);
       stop_time = time.time();
