@@ -153,7 +153,8 @@ class Game:
         pieces = pieces.replace('[', '');
         pieces = pieces.replace(']', '');
         pieces = pieces.replace(',', ' &');
-        print('You had only one jump availible, so you moved {} to {} jumping {}'.format(in_list[0][0], place, pieces));
+        print('You had only one jump availible, so you moved {} to {} jumping {}'.format(str(in_list[0][0]).strip(' '),
+                                                                                         place, pieces));
         move = input('Press any key then enter to continue.');
         return in_list[0];
       else:
@@ -164,7 +165,7 @@ class Game:
           pieces = pieces.replace('[', '');
           pieces = pieces.replace(']', '');
           pieces = pieces.replace(',', ' &');
-          print('{}: Move {} to {} jumping {}'.format(str(i), each[0], place, pieces));
+          print('{}: Move {} to {} jumping {}'.format(str(i), str(each[0]).strip(' '), place, pieces));
           i += 1;
       move = input('Which move would you like to make? (1 - ' + str(len(in_list)) + ')');
       return in_list[int(move) - 1];
@@ -204,11 +205,22 @@ if __name__ == '__main__':
     else:
       print("AI's turn:");
       st = time.time();
-      new_board = LA.IsJumpPossible(Game_obj.AI_TURN, B_obj);
-      B_obj = new_board; #jumped count reset
+      move_info = LA.IsJumpPossible(Game_obj.AI_TURN, B_obj);
+      B_obj = move_info[3]; #jumped count reset
       B_obj.PrintBoard();
+      place = str(Game_obj.translate_list_to_board(move_info[1])).replace("'", '');
+      if move_info[2] != '':
+        pieces = str(move_info[2]).replace("'", '');
+        pieces = pieces.replace('[', '');
+        pieces = pieces.replace(']', '');
+        pieces = pieces.replace(',', ' &');
+        print('AI moved {} to {} jumping {}\n'.format(str(move_info[0]).strip(' '), place, pieces));
+        B_obj.MOVES_WITHOUT_JUMP = 0;
+      else:
+        print('AI moved {} to {}\n'.format(str(move_info[0]).strip(' '), place));
+
       end = time.time()
-      print('calc time: ' + str(end - st));
+      # print('calc time: ' + str(end - st) + '\n');
     if Game_obj.is_game_over(B_obj):
       winner = Game_obj.who_won(B_obj);
       stop_time = time.time();

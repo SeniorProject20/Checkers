@@ -25,7 +25,7 @@ class CheckJumps:
             # common to kings and not kings
             new_board = board_obj.CopyBoard();
             new_board.Move(checker, each[0], each[1]);
-            boards.append(new_board);
+            boards.append([checker, [each[0], each[1]], '', new_board]); # packing up the same as get_all_jumps
             check = self.IsJumpPossible(False, new_board)  # checking to see if this move makes me jumpable
             for all in check:
               for jumps in all[2]:
@@ -34,13 +34,12 @@ class CheckJumps:
               score += 2;
             best.append(score);
             score = 0;
-
       x = best.index(max(best));
       return boards[x];
 
     # if only 1 jump is possible return that board
     if len(poss_moves) == 1:
-      return poss_moves[0][3];
+      return poss_moves[0];
 
     # if multiple jumps are possible, pick the best one
     while (i < len(poss_moves)):
@@ -62,9 +61,8 @@ class CheckJumps:
         score += 2;
       best.append(score);
       i += 1;
-
     x = best.index(max(best));
-    return poss_moves[x][3];
+    return poss_moves[x];
 
   # local function to keep track of all jumps possible by a checker
   def get_all_jumps(self, board_obj, checker, poss_moves):
