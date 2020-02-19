@@ -11,8 +11,6 @@ class Checker:
     if not self.isKing:
       self.isKing = True;
       return '{} was Kinged!'.format(self.name);
-    else:
-      return '';
 
   # repr for and checker
   def __repr__(self):

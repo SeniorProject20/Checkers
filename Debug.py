@@ -94,6 +94,9 @@
 #     except (ValueError) as e:
 #       pass;  # print(str(e));
 
-i = [0,1,2,3,4,15,0,14,15]
-x = i.index(max(i))
-print(x)
+from Interface import Interface
+inter = Interface();
+hi = [];
+hi = Interface.ParseCameraData(inter);
+print(hi)
+print('done')

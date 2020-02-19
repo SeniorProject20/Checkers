@@ -269,6 +269,33 @@ class Board:
       self.PRINT_QUEUE = '';
     print('');
 
+  def CreateNewBoardFromInterface(self, list_in):
+    b, r = 0, 0;
+    for row in range(self.NUM_ROWS):
+      for column in range(self.NUM_COLUMNS):
+        if (row == 3 or row == 4) and not (self.board[row][column] == self.INVALID_SPACE):
+          name = self.FREE_SPACE;
+        else:
+          if row < 3 and b < self.NUM_BLACK and not (self.board[row][column] == self.INVALID_SPACE):
+            if b < 10:
+              name = 'B' + str(b) + ' ';
+            else:
+              name = 'B' + str(b);
+            ref = Checker('black', name);
+            self.CHECKERS[name] = ref;
+            b += 1;
+          elif row > 4 and r < self.NUM_RED and not (self.board[row][column] == self.INVALID_SPACE):
+            if r < 10:
+              name = 'R' + str(r) + ' ';
+            else:
+              name = 'R' + str(r);
+            ref = Checker('red', name);
+            self.CHECKERS[name] = ref;
+            r += 1;
+        if name != None:
+          self.board[row][column] = name;
+        name = None;
+
   # Trying jump 5
   def InitRiggedBoard1(self):
     self.mark_invalid_spaces();

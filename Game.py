@@ -1,5 +1,6 @@
 import time;
 from Board import Board;
+from Interface import Interface;
 from Checker import Checker;
 from LookAhead import CheckJumps;
 
@@ -119,7 +120,7 @@ class Game:
         r += 1;
       else: # black checker case
         bl += 1;
-    if r == 0 or bl == 0 or b.MOVES_WITHOUT_JUMP >= 15:
+    if r == 0 or bl == 0 or b.MOVES_WITHOUT_JUMP > 14:
       return True;
     else:
       return False;
@@ -204,6 +205,7 @@ if __name__ == '__main__':
           Game_obj.AI_TURN = not Game_obj.AI_TURN;  # just to reset it to your move again
     else:
       print("AI's turn:");
+      # Interface.WaitForButton();
       st = time.time();
       move_info = LA.IsJumpPossible(Game_obj.AI_TURN, B_obj);
       B_obj = move_info[3]; #jumped count reset
@@ -219,8 +221,8 @@ if __name__ == '__main__':
       else:
         print('AI moved {} to {}\n'.format(str(move_info[0]).strip(' '), place));
 
-      end = time.time()
-      # print('calc time: ' + str(end - st) + '\n');
+      end = time.time();
+      print('calc time: ' + str(end - st) + '\n');
     if Game_obj.is_game_over(B_obj):
       winner = Game_obj.who_won(B_obj);
       stop_time = time.time();
