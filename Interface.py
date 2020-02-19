@@ -3,7 +3,8 @@ from Board import Board;
 from Checker import Checker;
 
 class Interface():
-  glBestCameraCapture = ['sample 330:',
+
+  BestCameraCapture = ['sample 330:',
                          '[SIG=red X=202 Y=88 AGE=255]',
                          '[SIG=red X=75 Y=110 AGE=255]',
                          '[SIG=pink X=82 Y=62 AGE=255]',
@@ -22,10 +23,18 @@ class Interface():
   def __init__(self):
     self.pixels_per_square = 26;
 
-  def ParseCameraData(self):
+  def CreateGameBoard(self):
+    board = Board();
+    board.InitializeBoard();
+    parsed_lst = [];
+    parsed_lst = self.parse_camera_data();
+    board = board.CreateNewBoardFromInterface(parsed_lst);
+    return board;
+
+  def parse_camera_data(self):
     pieces = [];
     try:
-      for each in self.glBestCameraCapture:
+      for each in self.BestCameraCapture: #Board.BEST_CAMERA_CAPTURE:
         if self.Strip(re.findall('(X=\S+)', each)):
           x_coord = int(self.Strip(re.findall('(X=\d+)', each)));
           y_coord = int(self.Strip(re.findall('(Y=\d+)', each)));
@@ -40,7 +49,7 @@ class Interface():
     x_in = round((x_pos - 40) / self.pixels_per_square);
     y_loc = round((int(y_pos) / self.pixels_per_square));
     x_loc = self.TranslateXToBoard(x_in);
-    place = [x_loc, y_loc];
+    place = [y_loc, x_loc];
     return place;
 
   def TranslateXToPacket(self, x):
@@ -54,9 +63,9 @@ class Interface():
     return x_t;
 
   def WaitForButton(self):
-    while not(gbAI_Turn):
+    while not(Board.AI_Turn):
       time.sleep(0.05);
-    gbAI_Turn = False;
+    Board.AI_Turn = False;
 
 
   def Strip(self, passed_in):

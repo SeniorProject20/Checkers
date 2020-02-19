@@ -174,39 +174,43 @@ class Game:
       pass;
 
 if __name__ == '__main__':
-  start_time = time.time();
-  Game_obj = Game();
-  LA = CheckJumps();
-  B_obj = Board();
-  B_obj.InitializeBoard();
-  Game_obj.test_cases(B_obj);
-  while not Game_obj.GAME_OVER:
-    if not Game_obj.AI_TURN: # Players turn
-      print("Player 1's turn:");
-      jump = LA.IsJumpPossible(Game_obj.AI_TURN, B_obj);
-      if jump != []:
-        selected = Game_obj.select_move_from_list(jump);
-        B_obj = selected[3]; # replacing the board object with the updated one from the jump
-        B_obj.MOVES_WITHOUT_JUMP = 0;
-        B_obj.PrintBoard();
-      else:
-        piece = Game_obj.get_checker_to_move(B_obj);
-        new_row, new_column = None, None;
-        if piece != None:
-          new_row, new_column = Game_obj.get_move_to_location(B_obj);
-        if new_row != None and new_column != None: #  if no error in input
-          if B_obj.Move(piece, new_row, new_column, True):
-            pass;
-          else:
-            print('Invalid move, please try again.');
-            Game_obj.AI_TURN = not Game_obj.AI_TURN;  # just to reset it to your move again
-        else:
-          print('Invalid move, please try again.');
-          Game_obj.AI_TURN = not Game_obj.AI_TURN;  # just to reset it to your move again
-    else:
-      print("AI's turn:");
-      # Interface.WaitForButton();
-      st = time.time();
+  while (1):
+    start_time = time.time();
+    Game_obj = Game();
+    Interface = Interface();
+    LA = CheckJumps();
+    B_obj = Board();
+    B_obj.InitializeBoard();
+    Game_obj.test_cases(B_obj);
+    while not Game_obj.GAME_OVER:
+      # if not Game_obj.AI_TURN: # Players turn
+      #   print("Player 1's turn:");
+      #   jump = LA.IsJumpPossible(Game_obj.AI_TURN, B_obj);
+      #   if jump != []:
+      #     selected = Game_obj.select_move_from_list(jump);
+      #     B_obj = selected[3]; # replacing the board object with the updated one from the jump
+      #     B_obj.MOVES_WITHOUT_JUMP = 0;
+      #     B_obj.PrintBoard();
+      #   else:
+      #     piece = Game_obj.get_checker_to_move(B_obj);
+      #     new_row, new_column = None, None;
+      #     if piece != None:
+      #       new_row, new_column = Game_obj.get_move_to_location(B_obj);
+      #     if new_row != None and new_column != None: #  if no error in input
+      #       if B_obj.Move(piece, new_row, new_column, True):
+      #         pass;
+      #       else:
+      #         print('Invalid move, please try again.');
+      #         Game_obj.AI_TURN = not Game_obj.AI_TURN;  # just to reset it to your move again
+      #     else:
+      #       print('Invalid move, please try again.');
+      #       Game_obj.AI_TURN = not Game_obj.AI_TURN;  # just to reset it to your move again
+      # else:
+      #   print("AI's turn:");
+        # Interface.WaitForButton();
+      # st = time.time();
+      Interface.WaitForButton();
+      B_obj = Interface.CreateGameBoard();
       move_info = LA.IsJumpPossible(Game_obj.AI_TURN, B_obj);
       B_obj = move_info[3]; #jumped count reset
       B_obj.PrintBoard();
@@ -221,15 +225,21 @@ if __name__ == '__main__':
       else:
         print('AI moved {} to {}\n'.format(str(move_info[0]).strip(' '), place));
 
-      end = time.time();
-      print('calc time: ' + str(end - st) + '\n');
-    if Game_obj.is_game_over(B_obj):
-      winner = Game_obj.who_won(B_obj);
-      stop_time = time.time();
-      if winner[0]:
-        print('\nGame Over! {} wins!!\n'.format(str(winner[1])));
-      else:
-        print('\nGame is a Draw\n');
-      print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
-      exit(0);
-    Game_obj.AI_TURN = not Game_obj.AI_TURN;
+      # end = time.time();
+      # print('calc time: ' + str(end - st) + '\n');
+      if Game_obj.is_game_over(B_obj):
+        winner = Game_obj.who_won(B_obj);
+        stop_time = time.time();
+        if winner[0]:
+          if winner[1] == 'Black':
+            print('\nGame Over! Blue wins!!\n');
+            #set LED blue
+          else:
+            print('\nGame Over! Red wins!!\n');
+            #set LED Red
+        else:
+          print('\nGame is a Draw\n');
+          #do something else
+        print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
+        break; # Just start a new game
+      Game_obj.AI_TURN = not Game_obj.AI_TURN;

@@ -97,6 +97,10 @@
 from Interface import Interface
 inter = Interface();
 hi = [];
-hi = Interface.ParseCameraData(inter);
-print(hi)
-print('done')
+hi = inter.CreateGameBoard();
+print(type(hi));
+print(len(hi.CHECKERS))
+hi.PrintBoard();
+# last_counts = [0,0,0,0,0,0,1,0,0,0,0]
+# print(len(last_counts))
+# print(all(x == last_counts[0] for x in last_counts))

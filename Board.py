@@ -11,6 +11,9 @@ class Board:
   INVALID_SPACE = None;
   MOVES_WITHOUT_JUMP = 0;
   PRINT_QUEUE = '';
+  BEST_CAMERA_CAPTURE = [];
+  AI_TURN = False;
+
 
   def __init__(self):
     self.board = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
@@ -20,7 +23,8 @@ class Board:
   # creates a board set to begin play
   def InitializeBoard(self):
     self.mark_invalid_spaces();
-    self.set_pieces_to_default();
+
+    # self.set_pieces_to_default();
     self.PrintBoard();
 
   # mark invalid spaces
@@ -30,6 +34,8 @@ class Board:
       for column in range(self.NUM_COLUMNS):
         if (row + column) % 2:
           self.board[row][column] = self.INVALID_SPACE;
+        else:
+          self.board[row][column] = self.FREE_SPACE;
   
   # returns if the position in question is open
   def IsSpaceOpen(self, row, column):
@@ -271,30 +277,47 @@ class Board:
 
   def CreateNewBoardFromInterface(self, list_in):
     b, r = 0, 0;
-    for row in range(self.NUM_ROWS):
-      for column in range(self.NUM_COLUMNS):
-        if (row == 3 or row == 4) and not (self.board[row][column] == self.INVALID_SPACE):
-          name = self.FREE_SPACE;
+    for each in list_in:
+      row = each[1][0];
+      column = each[1][1];
+      if each[0] == 'blue' and not (self.board[row][column] == self.INVALID_SPACE):
+        if b < 10:
+          name = 'B' + str(b) + ' ';
         else:
-          if row < 3 and b < self.NUM_BLACK and not (self.board[row][column] == self.INVALID_SPACE):
-            if b < 10:
-              name = 'B' + str(b) + ' ';
-            else:
-              name = 'B' + str(b);
-            ref = Checker('black', name);
-            self.CHECKERS[name] = ref;
-            b += 1;
-          elif row > 4 and r < self.NUM_RED and not (self.board[row][column] == self.INVALID_SPACE):
-            if r < 10:
-              name = 'R' + str(r) + ' ';
-            else:
-              name = 'R' + str(r);
-            ref = Checker('red', name);
-            self.CHECKERS[name] = ref;
-            r += 1;
-        if name != None:
-          self.board[row][column] = name;
-        name = None;
+          name = 'B' + str(b);
+        ref = Checker('black', name);
+        self.CHECKERS[name] = ref;
+        b += 1;
+      elif each[0] == 'red' and not (self.board[row][column] == self.INVALID_SPACE):
+        if r < 10:
+          name = 'R' + str(r) + ' ';
+        else:
+          name = 'R' + str(r);
+        ref = Checker('red', name);
+        self.CHECKERS[name] = ref;
+        r += 1;
+      elif each[0] == 'pink' and not (self.board[row][column] == self.INVALID_SPACE):
+        if r < 10:
+          name = 'R' + str(r) + ' ';
+        else:
+          name = 'R' + str(r);
+        ref = Checker('red', name);
+        self.CHECKERS[name] = ref;
+        ref.KingMe();
+        r += 1;
+      elif each[0] == 'green' and not (self.board[row][column] == self.INVALID_SPACE):
+        if r < 10:
+          name = 'R' + str(r) + ' ';
+        else:
+          name = 'R' + str(r);
+        ref = Checker('black', name);
+        self.CHECKERS[name] = ref;
+        ref.KingMe();
+        r += 1;
+      if name != None:
+        self.board[row][column] = name;
+      name = None;
+    return self;
 
   # Trying jump 5
   def InitRiggedBoard1(self):
