@@ -212,7 +212,7 @@ if __name__ == '__main__':
         if move_info[5]: # got kinged
           pass;
           #do something from board control
-        B_obj = move_info[3];  # jumped count reset
+        B_obj = move_info[3];
         B_obj.PrintBoard();
 
       if Game_obj.is_game_over(B_obj):

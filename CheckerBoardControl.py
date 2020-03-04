@@ -1,5 +1,4 @@
 import CommandInterface as ci;
-from CommandInterface import CommandInterface as cmd;
 import time;
 
 class CheckerBoardControl:
@@ -82,20 +81,21 @@ class CheckerBoardControl:
     time.sleep(self.Wait_Time_For_Next_Move);
     # retract magnet
     self.comm.SendCommand("LB", params=[self.MagnetRetractPosition]);
-    # time.sleep(self.Wait_Time_For_Next_Move);
+    time.sleep(self.Wait_Time_For_Next_Move);
 
-  def ButtonLEDOn(self, bool):
+  def SetButtonLED(self, bool):
     if bool:
-      cmd.ToggleButtonLED(1);
+      self.comm.SendCommand('BE', [1], 0);
     else:
-      cmd.ToggleButtonLED(0);
+      self.comm.SendCommand('BE', [0], 0);
 
   def WaitForButton(self):
-    while not cmd.GetButtonState():
+    while not self.comm.GetButtonState():
       continue;
     start = time.time();
-    while cmd.GetButtonState():
+    while self.comm.GetButtonState():
       continue;
     end = time.time();
-    if (end - start > 3):
-      STAND_ALONE = True;
+    elapsed = end - start;
+    if (elapsed > 3):
+      self.STAND_ALONE = True;

@@ -18,20 +18,17 @@ class CommandInterface:
     for param in params:
       packet += str(param) + " "
     packet += "0]\r\n"
-    # print(packet)
+#    print(packet)
     self.connection.write(convert_string_to_byte_array(packet))
-    # print(self.connection.readline())
+#    print(self.connection.readline())
     self.connection.readline();
     if unsolicited == True:
-      print("unsol");
-      # print(self.connection.readline())
+#      print("unsol");
+#      print(self.connection.readline())
       self.connection.readline();
 
-  def ToggleButtonLED(self, on):
-    self.SendCommand('BE', [on], 0);
-
   def GetButtonState(self):
-    self.connection.write(convert_string_to_byte_array("[A- BP00 0 0]"));
+    self.connection.write(convert_string_to_byte_array("[A- BP00 0]\r\n"));
     response = self.connection.readline();
     parsed = int(list(str(response).split(' '))[3]);
     if parsed == 1:

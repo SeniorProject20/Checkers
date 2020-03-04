@@ -74,10 +74,10 @@ class Board:
           else:
             return False;
       else:
-        print('Your move to selection was not a free space.');
+        # print('Your move to selection was not a free space.');
         return False;
     else:
-      print('Your move to selection was not a valid space.');
+      # print('Your move to selection was not a valid space.');
       return False;
 
   # proforms a free space move
@@ -87,30 +87,30 @@ class Board:
         if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
           return True;
         else:
-          print('Your column selection was wrong.');
+          # print('Your column selection was wrong.');
           return False;
       else:
-        print('Your row selection was wrong.');
+        # print('Your row selection was wrong.');
         return False;
     elif checker_obj.color == 'black':
       if (new_row == current_row + 1):
         if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
           return True;
         else:
-          print('Your column selection was wrong.');
+          # print('Your column selection was wrong.');
           return False;
       else:
-        print('Your row selection was wrong.');
+        # print('Your row selection was wrong.');
         return False;
     elif checker_obj.color == 'red':
       if (new_row == (current_row - 1)):
         if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
           return True;
         else:
-          print('Your column selection was wrong.');
+          # print('Your column selection was wrong.');
           return False;
       else:
-        print('Your row selection was wrong.');
+        # print('Your row selection was wrong.');
         return False;
 
   # checks to see if a legal jump is possible
@@ -133,10 +133,10 @@ class Board:
               del checker_to_jump;
               return True;
             else:
-              print('Your column selection was wrong.');
+              # print('Your column selection was wrong.');
               return False;
           else:
-            print('Your row selection was wrong.');
+            # print('Your row selection was wrong.');
             return False;
         elif checker_obj.color == 'black':
           if (new_row == (current_row + 2)):
@@ -146,10 +146,10 @@ class Board:
               del checker_to_jump;
               return True;
             else:
-              print('Your column selection was wrong.');
+              # print('Your column selection was wrong.');
               return False;
           else:
-            print('Your row selection was wrong.');
+            # print('Your row selection was wrong.');
             return False;
         elif checker_obj.color == 'red':
           if (new_row == (current_row - 2)):
@@ -159,16 +159,16 @@ class Board:
               del checker_to_jump;
               return True;
             else:
-              print('Your column selection was wrong.');
+              # print('Your column selection was wrong.');
               return False;
           else:
-            print('Your row selection was wrong.');
+            # print('Your row selection was wrong.');
             return False;
         else:
           print('Bad color arg.')
           return False;
       else:
-        print('Cannot jump your own color.');
+        # print('Cannot jump your own color.');
         return False;
     else:
       print('checker_to_jump = False.');
@@ -219,7 +219,8 @@ class Board:
         current_row = i;
         return current_row, current_column;
       except (ValueError) as e:
-        pass; # print(str(e));
+        pass;
+        # print(str(e));
 
   # given a checker name, return the object
   def get_checker_object_from_name(self, name):

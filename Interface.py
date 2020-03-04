@@ -13,7 +13,7 @@ class Interface():
     '[SIG=pink X=199 Y=139 AGE=255]',
     '[SIG=blue X=227 Y=117 AGE=255]',
     '[SIG=green X=228 Y=66 AGE=255]',
-    '[SIG=blue X=99 Y=89 AGE=255]', #
+    # '[SIG=blue X=99 Y=89 AGE=255]', #
     '[SIG=red X=55 Y=64 AGE=255]',
     '[SIG=red X=158 Y=37 AGE=255]',
     '[SIG=green X=179 Y=63 AGE=255]',
