@@ -1,17 +1,21 @@
 from Board import Board;
 from Checker import Checker;
 
-class CheckJumps:
+class LookAhead:
 
   # Looks at possible boards and selects best one
   def ChooseBestMove(self, poss_moves, board_obj):
     i, score, best, boards = 0, 0, [], [];
 
-    # if no jumps are possible pick the best possible
+    # if no jumps are possible pick the best possible move
     if len(poss_moves) == 0:
       for checker in board_obj.CHECKERS:
-        if checker.startswith('B'):
-          moves = self.CanCheckerMove(board_obj, checker); # moves = [row, column]
+        if board_obj.AI_TURN:
+          letter = 'B';
+        else:
+          letter = 'R';
+        if checker.startswith(letter):
+          moves = self.CanCheckerMove(board_obj, checker);
           if len(moves) == 0:
             continue;
           for each in moves:
@@ -21,15 +25,17 @@ class CheckJumps:
               if each[0] < 6 or each[0] > 2:
                 score += 2;
             else:  # unique to non-kings
-              score += (each[0]) * 2;
+              if letter == 'B':
+                score += each[0] * 2;
+              else:
+                score += (each[0] - 7) * 2;
             # common to kings and not kings
             new_board = board_obj.CopyBoard();
             new_board.Move(checker, each[0], each[1]);
             boards.append([checker, [each[0], each[1]], '', new_board]); # packing up the same as get_all_jumps
-            check = self.IsJumpPossible(False, new_board)  # checking to see if this move makes me jumpable
-            for all in check:
-              for jumps in all[2]:
-                score -= 20;
+            check = self.IsJumpPossible(not board_obj.AI_TURN, new_board)  # checking to see if this move makes me jumpable
+            for each in range(len(check[2])):
+              score -= 20;
             if each[1] < 6 or each[1] > 1:  # points for staying toward the middle
               score += 2;
             best.append(score);
@@ -45,16 +51,16 @@ class CheckJumps:
     while (i < len(poss_moves)):
       score = 0;
       # unique to kings
-      if Board.get_checker_object_from_name(poss_moves[i][0]).IsKing: # point for staying toward the middle
+      checker_obj = board_obj.get_checker_object_from_name(poss_moves[i][0]);
+      if checker_obj.isKing: # point for staying toward the middle
         if poss_moves[i][1][0] < 6 or poss_moves[i][1][0] > 2:
           score += 2;
       else: # unique to non-kings
         score += (poss_moves[i][1][0]) * 2;
       # common to kings and not kings
-      check = self.IsJumpPossible(False, poss_moves[i][3]) # checking to see if this move makes me jumpable
-      for each in check:
-        for jumps in each[2]:
-          score -= 20;
+      check = self.IsJumpPossible(not board_obj.AI_TURN, poss_moves[i][3]) # checking to see if this move makes me jumpable
+      for each in range(len(check[2])):
+        score -= 20;
       for each in poss_moves[i][2]: # point for each checker that you can jump
         score += 20;
       if poss_moves[i][1][1] < 6 or poss_moves[i][1][1] > 1: # point for staying toward the middle
@@ -66,8 +72,10 @@ class CheckJumps:
 
   # local function to keep track of all jumps possible by a checker
   def get_all_jumps(self, board_obj, checker, poss_moves):
-    poss_jumps_list, pieces_to_jump, spot, multi = [], [], [], False;
+    poss_jumps_list, pieces_to_jump, spot, start_pos, multi = [], [], [], [], False;
     poss_jumps_list = self.CanCheckerJump(board_obj, checker);
+    row, column = board_obj.get_checker_location_from_name(checker);
+    start_pos = [row, column];
     for each in poss_jumps_list:
       new_board = board_obj.CopyBoard();
       new_board.Move(checker, each[0], each[1]);
@@ -85,7 +93,7 @@ class CheckJumps:
         spot = [current_jump[0], current_jump[1]];
       else:
         spot = [each[0], each[1]];
-      poss_moves.append([checker, spot, pieces_to_jump, new_board]);
+      poss_moves.append([checker, spot, pieces_to_jump, new_board, start_pos]);
       multi = False;
       pieces_to_jump = [];
     return poss_moves;
@@ -103,8 +111,8 @@ class CheckJumps:
         for checker in board_obj.CHECKERS:
           if checker.startswith('R'):
             poss_moves = self.get_all_jumps(board_obj, checker, poss_moves);
-      return poss_moves;
-    except (IndexError) as e:
+      return self.ChooseBestMove(poss_moves, board_obj); #poss_moves;
+    except (IndexError, TypeError) as e:
       print(e);
 
   # determins if a given checker can move or if it is trapped
@@ -112,7 +120,7 @@ class CheckJumps:
     try:
       moves = []
       checker_obj = board_obj.get_checker_object_from_name(checker);
-      row, column = board_obj.get_checker_index_from_name(checker);
+      row, column = board_obj.get_checker_location_from_name(checker);
 
       if checker_obj.isKing:
         if row < 7 and column < 7:
@@ -173,7 +181,7 @@ class CheckJumps:
     try:
       moves = []
       checker_obj = board_obj.get_checker_object_from_name(checker);
-      row, column = board_obj.get_checker_index_from_name(checker);
+      row, column = board_obj.get_checker_location_from_name(checker);
 
       if checker_obj.isKing:
         if row < 6 and column < 6:
@@ -219,9 +227,9 @@ class CheckJumps:
           if dest != None:
             moves.append(dest);
       return moves;
-    except (IndexError):
-      pass
-    
+    except (IndexError, TypeError) as e:
+      print(str(e))
+
   # verifies the jump is legal for CanCheckerMove
   def dest_jump_check(self, board_obj, checker_obj, space, v, h, row, column):
     if str(space).startswith('R') or str(space).startswith('B'):

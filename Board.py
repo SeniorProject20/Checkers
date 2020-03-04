@@ -11,8 +11,8 @@ class Board:
   INVALID_SPACE = None;
   MOVES_WITHOUT_JUMP = 0;
   PRINT_QUEUE = '';
-  BEST_CAMERA_CAPTURE = [];
-  AI_TURN = False;
+  AI_TURN = True;
+  BUTTON_PRESSED = True; # need false
 
 
   def __init__(self):
@@ -25,7 +25,7 @@ class Board:
     self.mark_invalid_spaces();
 
     # self.set_pieces_to_default();
-    self.PrintBoard();
+    # self.PrintBoard();
 
   # mark invalid spaces
   def mark_invalid_spaces(self):
@@ -45,15 +45,15 @@ class Board:
       return False;
 
   # move a checker
-  def Move(self, checker_name, new_row, new_column, print = False):
-    current_row, current_column = self.get_checker_index_from_name(checker_name);
+  def Move(self, checker_name, new_row, new_column, can_print = False):
+    current_row, current_column = self.get_checker_location_from_name(checker_name);
     checker_obj = self.get_checker_object_from_name(checker_name);
     if self.is_move_valid(checker_obj, current_row, current_column, new_row, new_column):
       self.board[new_row][new_column] = checker_name;
       self.board[current_row][current_column] = self.FREE_SPACE;
       if (new_row == 0 and checker_obj.color == 'red') or (new_row == 7 and checker_obj.color == 'black'):
         self.PRINT_QUEUE = checker_obj.KingMe();
-      if print:
+      if can_print:
         self.PrintBoard();
       return True;
     else:
@@ -213,7 +213,7 @@ class Board:
     return new_board;
 
   # given a checker name, return the index for self.board
-  def get_checker_index_from_name(self, name):
+  def get_checker_location_from_name(self, name):
     current_row, current_column = 0, 0;
     for i in range(len(self.board)):
       try:
@@ -306,17 +306,17 @@ class Board:
         ref.KingMe();
         r += 1;
       elif each[0] == 'green' and not (self.board[row][column] == self.INVALID_SPACE):
-        if r < 10:
-          name = 'R' + str(r) + ' ';
+        if b < 10:
+          name = 'B' + str(b) + ' ';
         else:
-          name = 'R' + str(r);
+          name = 'B' + str(b);
         ref = Checker('black', name);
         self.CHECKERS[name] = ref;
         ref.KingMe();
-        r += 1;
+        b += 1;
       if name != None:
         self.board[row][column] = name;
-      name = None;
+        name = None;
     return self;
 
   # Trying jump 5
@@ -450,17 +450,3 @@ class Board:
     ref.KingMe();
     self.CHECKERS['B0'] = ref;
     self.board[1][5] = 'B0';
-
-# if __name__ == '__main__': # for debugging this file
-#   x = Board();
-#   x.InitializeBoard();
-#   for each in x.CHECKERS:
-#     print(each)
-#   x.Move('R0', 4,2);
-#   x.Move('R0',3,3);
-#   x.Move('B9',4,4);
-#   x.Move('R1',3,5);
-#   print(x.IsSpaceOpen(3,1));
-#   print(x.CHECKERS);
-
-# I will pass down [current_row, current_column, new_row, new_column] to Tyson's board to move piece with steppers.
