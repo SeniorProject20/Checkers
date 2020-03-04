@@ -137,7 +137,7 @@ class Board:
             # print('Your row selection was wrong.');
             return False;
         elif checker_obj.color == 'black':
-          if (new_row == (current_row + 2)):
+          if (new_row == (current_row - 2)):
             if (new_column == (current_column + 2)) or (new_column == (current_column - 2)):
               self.board[r][c] = self.FREE_SPACE;
               self.CHECKERS.pop(checker_to_jump.name);
@@ -150,7 +150,7 @@ class Board:
             # print('Your row selection was wrong.');
             return False;
         elif checker_obj.color == 'red':
-          if (new_row == (current_row - 2)):
+          if (new_row == (current_row + 2)):
             if (new_column == (current_column + 2)) or (new_column == (current_column - 2)):
               self.board[r][c] = self.FREE_SPACE;
               self.CHECKERS.pop(checker_to_jump.name);
@@ -275,6 +275,7 @@ class Board:
   # is used by Interface to create game board state from camera data
   def CreateNewBoardFromInterface(self, list_in):
     b, r = 0, 0;
+    name = None;
     for each in list_in:
       row = each[1][0];
       column = each[1][1];

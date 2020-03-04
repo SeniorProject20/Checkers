@@ -28,9 +28,9 @@ class LookAhead:
                   score += 2;
               else:  # unique to non-kings
                 if letter == 'B':
-                  score += each[0] * 2;
+                  score += (7 - each[0]) * 2;
                 else:
-                  score += (each[0] - 7) * 2;
+                  score += each[0] * 2;
               # common to kings and not kings
               new_board_obj = board_obj.CopyBoard();
               new_board_obj.Move(checker, each[0], each[1]);
@@ -63,9 +63,9 @@ class LookAhead:
               score += 2;
           else: # unique to non-kings
             if letter == 'B':
-              score += (poss_moves[i][1][0]) * 2;
+              score += (7 - (poss_moves[i][1][0])) * 2;
             else:
-              score += ((poss_moves[i][1][0]) - 7) * 2;
+              score += (poss_moves[i][1][0]) * 2;
           # common to kings and not kings
           new_board_obj = board_obj.CopyBoard();
           new_board_obj.Move(checker, poss_moves[i][1][0], poss_moves[i][1][1]);
@@ -99,7 +99,7 @@ class LookAhead:
       new_board.Move(checker, each[0], each[1]);
       pieces_to_jump.append(each[2]);
       next_jump = self.CanCheckerJump(new_board, checker);
-      while next_jump != []:
+      while next_jump != [] and next_jump != None:
         multi = True;
         new_board = new_board.CopyBoard();
         pieces_to_jump.append(next_jump[0][2]);
@@ -133,6 +133,7 @@ class LookAhead:
     except (IndexError, TypeError) as e:
       print(e);
 
+  # Same as IsJumpPossible, but doesn't recurse for ChooseBestMove
   def CheckForOpponentJumps(self, board_obj):
     poss_moves = [];
     try:
@@ -178,17 +179,6 @@ class LookAhead:
           if dest != None:
             moves.append(dest);
       elif checker_obj.color == 'black':
-        if row < 7 and column < 7:
-          u_r = board_obj.board[row + 1][column + 1];
-          dest = self.dest_move_check(u_r, 1, 1, row, column);
-          if dest != None:
-            moves.append(dest);
-        if row < 7 and column > 0:
-          u_l = board_obj.board[row + 1][column - 1];
-          dest = self.dest_move_check(u_l, 1, -1, row, column);
-          if dest != None:
-            moves.append(dest);
-      else:
         if row > 0 and column < 7:
           d_r = board_obj.board[row - 1][column + 1];
           dest = self.dest_move_check(d_r, -1, 1, row, column);
@@ -199,21 +189,32 @@ class LookAhead:
           dest = self.dest_move_check(d_l, -1, -1, row, column);
           if dest != None:
             moves.append(dest);
+      else:
+        if row < 7 and column < 7:
+          u_r = board_obj.board[row + 1][column + 1];
+          dest = self.dest_move_check(u_r, 1, 1, row, column);
+          if dest != None:
+            moves.append(dest);
+        if row < 7 and column > 0:
+          u_l = board_obj.board[row + 1][column - 1];
+          dest = self.dest_move_check(u_l, 1, -1, row, column);
+          if dest != None:
+            moves.append(dest);
       return moves;
-    except (IndexError):
-      pass
+    except (IndexError, NameError):
+      pass;
     
   # populates the moves list for CanCheckerMove
   def dest_move_check(self, space, v, h, row, column):
     if space == Board.FREE_SPACE:
-      return [row + (v * 1), column + (h * 1)];
+      return [row + v , column + h];
     else:
       return None;
     
   # determins if a given checker can move or if it is trapped
   def CanCheckerJump(self, board_obj, checker):
     try:
-      moves = []
+      moves = [];
       checker_obj = board_obj.get_checker_object_from_name(checker);
       row, column = board_obj.get_checker_location_from_name(checker);
 
@@ -239,17 +240,6 @@ class LookAhead:
           if dest != None:
             moves.append(dest);
       elif checker_obj.color == 'black':
-        if row < 6 and column < 6:
-          u_r = board_obj.board[row + 1][column + 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_r, 1, 1, row, column);
-          if dest != None:
-            moves.append(dest);
-        if row < 6 and column > 1:
-          u_l = board_obj.board[row + 1][column - 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_l, 1, -1, row, column);
-          if dest != None:
-            moves.append(dest);
-      else:
         if row > 1 and column < 6:
           d_r = board_obj.board[row - 1][column + 1];
           dest = self.dest_jump_check(board_obj, checker_obj, d_r, -1, 1, row, column);
@@ -260,9 +250,21 @@ class LookAhead:
           dest = self.dest_jump_check(board_obj, checker_obj, d_l, -1, -1, row, column);
           if dest != None:
             moves.append(dest);
+      else:
+        if row < 6 and column < 6:
+          u_r = board_obj.board[row + 1][column + 1];
+          dest = self.dest_jump_check(board_obj, checker_obj, u_r, 1, 1, row, column);
+          if dest != None:
+            moves.append(dest);
+        if row < 6 and column > 1:
+          u_l = board_obj.board[row + 1][column - 1];
+          dest = self.dest_jump_check(board_obj, checker_obj, u_l, 1, -1, row, column);
+          if dest != None:
+            moves.append(dest);
       return moves;
     except (IndexError, TypeError) as e:
-      print(str(e))
+      # print(str(e))
+      pass;
 
   # verifies the jump is legal for CanCheckerMove
   def dest_jump_check(self, board_obj, checker_obj, space, v, h, row, column):
@@ -271,7 +273,7 @@ class LookAhead:
       if checker_to_jump_obj.color != checker_obj.color and board_obj.board[row + (v * 2)][column + (h * 2)] == Board.FREE_SPACE:
         new_r = row + (v * 2);
         new_col = column + (h * 2);
-        return new_r, new_col, checker_to_jump_obj.name;
+        return [new_r, new_col, checker_to_jump_obj.name];
       else:
         return None;
     else:

@@ -145,34 +145,42 @@ if __name__ == '__main__':
     Interface = Interface();
     LA = LookAhead();
     B_obj = Board();
-    pixy_obj = Blocks();
-    control = cb.CheckerBoardControl();
-    control.Home();
+    # pixy_obj = Blocks();
+    # control = cb.CheckerBoardControl();
+    # control.SetButtonLED(False);
+    # control.Home();
+    first = True;
     while not Game_obj.GAME_OVER:
       if (move_counter > 4):
-        control.Home();
-      if control.STAND_ALONE:
-        control.SetButtonLED(False);
+        # control.Home();
+        pass;
+      if True: #control.STAND_ALONE:
+        # control.SetButtonLED(False);
         B_obj.AI_TURN = not B_obj.AI_TURN;
         B_obj.MOVES_WITHOUT_JUMP += 1;
-        piece_lst = pixy_obj.get_pixy_data();
-        B_obj = Interface.CreateGameBoard(piece_lst, B_obj.AI_TURN);
+        piece_lst = [];
+        # piece_lst = pixy_obj.get_pixy_data();
+        if first:
+          B_obj = Interface.CreateGameBoard(piece_lst, B_obj.AI_TURN);
+          B_obj.PrintBoard();
+        first = False;
         move_info = LA.IsJumpPossible(B_obj);
         from_place = str(Game_obj.translate_list_to_board(move_info[4])).replace("'", '');
         to_place = str(Game_obj.translate_list_to_board(move_info[1])).replace("'", '');
-        control.MovePiece(from_place, to_place);
+        # control.MovePiece(from_place, to_place);
         move_counter += 1;
         if move_info[2] != '':
           for jumped_checkers in move_info[2]:
             location = B_obj.get_checker_location_from_name(jumped_checkers);
             jumped_checker_place = str(Game_obj.translate_list_to_board(location)).replace("'", '');
             move_counter += 1;
-            control.RemovePiece(jumped_checker_place);
-            B_obj.MOVES_WITHOUT_JUMP = 0;
+            # control.RemovePiece(jumped_checker_place);
+          B_obj.MOVES_WITHOUT_JUMP = 0;
           pieces = str(move_info[2]).replace("'", '');
           pieces = pieces.replace('[', '');
           pieces = pieces.replace(']', '');
           pieces = pieces.replace(',', ' &');
+          pieces = pieces.replace('  ', ' ');
           print('AI moved {} to {} jumping {}\n'.format(str(move_info[0]).strip(' '), to_place, pieces));
         else:
           print('AI moved {} to {}\n'.format(str(move_info[0]).strip(' '), to_place));
@@ -184,28 +192,29 @@ if __name__ == '__main__':
 
       else:
         print("AI's turn:");
-        control.SetButtonLED(True);
-        control.WaitForButton();
-        control.SetButtonLED(False);
-        # piece_lst = [];
-        piece_lst = pixy_obj.get_pixy_data();
+        # control.SetButtonLED(True);
+        # control.WaitForButton();
+        # control.SetButtonLED(False);
+        piece_lst = [];
+        # piece_lst = pixy_obj.get_pixy_data();
         B_obj = Interface.CreateGameBoard(piece_lst, True); # always AI turn in this game mode
         B_obj.PrintBoard();
         move_info = LA.IsJumpPossible(B_obj);
         from_place = Game_obj.translate_list_to_board(move_info[4]);
         to_place = Game_obj.translate_list_to_board(move_info[1]);
-        control.MovePiece(from_place, to_place);
+        # control.MovePiece(from_place, to_place);
         move_counter += 1;
         if move_info[2] != '':
           for jumped_checkers in move_info[2]:
             location = B_obj.get_checker_location_from_name(jumped_checkers);
             jumped_checker_place = str(Game_obj.translate_list_to_board(location));
-            control.RemovePiece(jumped_checker_place);
+            # control.RemovePiece(jumped_checker_place);
             move_counter += 1;
           pieces = str(move_info[2]).replace("'", '');
           pieces = pieces.replace('[', '');
           pieces = pieces.replace(']', '');
           pieces = pieces.replace(',', ' &');
+          pieces = pieces.replace('  ', ' ');
           print('AI moved {} to {} jumping {}\n'.format(str(move_info[0]).strip(' '), to_place, pieces));
         else:
           print('AI moved {} to {}\n'.format(str(move_info[0]).strip(' '), to_place));
@@ -229,6 +238,6 @@ if __name__ == '__main__':
           print('\nGame is a Draw\n');
           #do something else
         print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
-        control.SetButtonLED(True);
-        control.WaitForButton();
+        # control.SetButtonLED(True);
+        # control.WaitForButton();
         break; # Just start a new game
