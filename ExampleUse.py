@@ -1,15 +1,12 @@
-import CheckerBoardControl as cb
-import time
+import CheckerBoardControl as cb;
 
-control = cb.CheckerBoardControl()
+control = cb.CheckerBoardControl();
 
-
-control.Home()
-#
-#
-control.MovePiece("D4", "F6")
-control.MovePiece("E5", "D4")   
-#
-#
-#control.RemovePiece("E5")
+control.ButtonLEDOn(True);
+control.WaitForButton();
+control.ButtonLEDOn(False);
+control.Home();
+# control.MovePiece("D4", "F6");
+# control.MovePiece("E5", "D4");
+# control.RemovePiece("E5");
 

@@ -84,11 +84,11 @@ class CheckerBoardControl:
     self.comm.SendCommand("LB", params=[self.MagnetRetractPosition]);
     # time.sleep(self.Wait_Time_For_Next_Move);
 
-  def LEDOn(self, bool):
+  def ButtonLEDOn(self, bool):
     if bool:
-      cmd.TurnLEDOn(True);
+      cmd.ToggleButtonLED(1);
     else:
-      cmd.TurnLEDOn(False);
+      cmd.ToggleButtonLED(0);
 
   def WaitForButton(self):
     while not cmd.GetButtonState():

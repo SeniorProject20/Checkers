@@ -27,11 +27,11 @@ class CommandInterface:
       # print(self.connection.readline())
       self.connection.readline();
 
-  def TurnLEDOn(self):
-    self.connection.write(convert_string_to_byte_array("[A- LE 0 0 \r\n"));
+  def ToggleButtonLED(self, on):
+    self.SendCommand('BE', [on], 0);
 
   def GetButtonState(self):
-    self.connection.write(convert_string_to_byte_array("[A- BE 0 0 \r\n"));
+    self.connection.write(convert_string_to_byte_array("[A- BP00 0 0]"));
     response = self.connection.readline();
     parsed = int(list(str(response).split(' '))[3]);
     if parsed == 1:

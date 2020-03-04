@@ -3,51 +3,14 @@ from Board import Board;
 from Interface import Interface;
 from Checker import Checker;
 from LookAhead import LookAhead;
-import CheckerBoardControl as cb;
-from Pixy import Blocks;
+# import CheckerBoardControl as cb;
+# from Camera import Blocks;
 
 
 class Game:
 
   GAME_OVER = False; # Game isn't over till the fat lady sings
   COLUMN_KEY = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7};
-
-  #test cases
-  def test_cases(self, B_obj):
-
-    # Set the board with jumps possible
-    B_obj.Move('B9 ', 3, 1);
-    B_obj.Move('B9 ', 4, 2);
-    B_obj.Move('B10', 3, 3);
-    B_obj.Move('B10', 4, 4);
-    B_obj.Move('B6 ', 2, 4);
-    B_obj.Move('B5 ', 2, 2, True);
-
-    ## Trying jump 5
-    # B_obj.InitRiggedBoard1();
-
-    ## 4 different jumps poss
-    # B_obj.InitRiggedBoard2();
-
-    ## Checking Kinged message
-    # B_obj.InitRiggedBoard3();
-
-    ## Checking draw game
-    # B_obj.InitRiggedBoard4();
-    # moves = [B_obj.Move('R4', 4, 4), B_obj.Move('R4', 5, 3), B_obj.Move('B0', 2, 4), B_obj.Move('B0', 1, 5)]
-    # while True:
-    #   for each in moves:
-    #     each;
-    #   if Game_obj.is_game_over(B_obj):
-    #     winner = Game_obj.who_won(B_obj);
-    #     stop_time = time.time();
-    #     if winner[0]:
-    #       print('\n\nGame Over! {} wins!!\n\n'.format(str(winner[1])));
-    #     else:
-    #       print('Game is a *Draw*');
-    #     print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
-    #     exit(0);
-    pass
 
   # Converting column name to 0-7 index
   def translate_input_to_zero_base(self, input):
@@ -182,25 +145,29 @@ if __name__ == '__main__':
     Interface = Interface();
     LA = LookAhead();
     B_obj = Board();
-    pixy_obj = Blocks();
-    control = cb.CheckerBoardControl();
-    control.Home();
+    # pixy_obj = Blocks();
+    # control = cb.CheckerBoardControl();
+    # control.Home();
     while not Game_obj.GAME_OVER:
       if (move_counter > 4):
-        control.Home();
-      if control.STAND_ALONE:
+        # control.Home();
+        pass;
+      if False: #control.STAND_ALONE:
+        # control.ButtonLEDOn(False);
         B_obj.AI_TURN = not B_obj.AI_TURN;
         B_obj.MOVES_WITHOUT_JUMP += 1;
         B_obj = Interface.CreateGameBoard();
-        move_info = LA.IsJumpPossible(B_obj.AI_TURN, B_obj);
+        move_info = LA.IsJumpPossible(B_obj);
         from_place = str(Game_obj.translate_list_to_board(move_info[4])).replace("'", '');
         to_place = str(Game_obj.translate_list_to_board(move_info[1])).replace("'", '');
+        # control.MovePiece(from_place, to_place);
+        move_counter += 1;
         if move_info[2] != '':
           for jumped_checkers in move_info[2]:
             location = B_obj.get_checker_location_from_name(jumped_checkers);
             jumped_checker_place = str(Game_obj.translate_list_to_board(location)).replace("'", '');
             move_counter += 1;
-            control.RemovePiece(jumped_checker_place);
+            # control.RemovePiece(jumped_checker_place);
             B_obj.MOVES_WITHOUT_JUMP = 0;
           pieces = str(move_info[2]).replace("'", '');
           pieces = pieces.replace('[', '');
@@ -209,31 +176,31 @@ if __name__ == '__main__':
           print('AI moved {} to {} jumping {}\n'.format(str(move_info[0]).strip(' '), to_place, pieces));
         else:
           print('AI moved {} to {}\n'.format(str(move_info[0]).strip(' '), to_place));
+        if move_info[5]: # got kinged
+          #do something from board control
+          pass;
         B_obj = move_info[3];
         B_obj.PrintBoard();
-        control.MovePiece(from_place, to_place);
-        move_counter += 1;
 
       else:
         print("AI's turn:");
-        # Interface.WaitForButton();
-        B_obj.AI_TURN = True;
+        # control.ButtonLEDOn(True);
+        # control.WaitForButton();
+        # control.ButtonLEDOn(False);
         piece_lst = [];
-        piece_lst = pixy_obj.get_pixy_data();
-        while piece_lst == []:
-          print('1')
-          piece_lst = pixy_obj.get_pixy_data();
-        print('2')
+        # piece_lst = pixy_obj.get_pixy_data();
         B_obj = Interface.CreateGameBoard(piece_lst);
         B_obj.PrintBoard();
-        move_info = LA.IsJumpPossible(B_obj.AI_TURN, B_obj);
+        move_info = LA.IsJumpPossible(B_obj);
         from_place = Game_obj.translate_list_to_board(move_info[4]);
         to_place = Game_obj.translate_list_to_board(move_info[1]);
+        # control.MovePiece(from_place, to_place);
+        move_counter += 1;
         if move_info[2] != '':
           for jumped_checkers in move_info[2]:
             location = B_obj.get_checker_location_from_name(jumped_checkers);
             jumped_checker_place = str(Game_obj.translate_list_to_board(location));
-            control.RemovePiece(jumped_checker_place);
+            # control.RemovePiece(jumped_checker_place);
             move_counter += 1;
           pieces = str(move_info[2]).replace("'", '');
           pieces = pieces.replace('[', '');
@@ -242,10 +209,11 @@ if __name__ == '__main__':
           print('AI moved {} to {} jumping {}\n'.format(str(move_info[0]).strip(' '), to_place, pieces));
         else:
           print('AI moved {} to {}\n'.format(str(move_info[0]).strip(' '), to_place));
+        if move_info[5]: # got kinged
+          pass;
+          #do something from board control
         B_obj = move_info[3];  # jumped count reset
         B_obj.PrintBoard();
-        control.MovePiece(from_place, to_place);
-        move_counter += 1;
 
       if Game_obj.is_game_over(B_obj):
         winner = Game_obj.who_won(B_obj);
@@ -261,6 +229,6 @@ if __name__ == '__main__':
           print('\nGame is a Draw\n');
           #do something else
         print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
-        control.ToggleLED(True);
-        control.WaitForButton();
+        # control.ButtonLEDOn(True);
+        # control.WaitForButton();
         break; # Just start a new game
