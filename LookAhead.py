@@ -49,21 +49,7 @@ class LookAhead:
         x = best.index(max(best));
         return boards[x];
 
-      # # if only 1 jump is possible return that board
-      # elif len(poss_moves) == 1: #[checker, spot, pieces_to_jump, new_board, start_pos]
-      #   checker = poss_moves[0][0];
-      #   board_obj = poss_moves[0][3];
-      #   checker_obj = board_obj.get_checker_object_from_name(checker);
-      #   is_king_before = checker_obj.isKing;
-      #   new_board_obj = board_obj.CopyBoard();
-      #   new_board_obj.Move(checker, poss_moves[0][1][0], poss_moves[0][1][1]);
-      #   checker_obj = new_board_obj.get_checker_object_from_name(checker);
-      #   is_king_after = checker_obj.isKing;
-      #   is_kinged = (is_king_before == False) and (is_king_after == True);
-      #   poss_moves[0].append(is_kinged);
-      #   return poss_moves[0];
-
-      # if multiple jumps are possible, pick the best one
+      # if jumps are possible, pick the best one
       else:
         while (i < len(poss_moves)):
           score = 0;

@@ -22,8 +22,6 @@ class Board:
   # creates a board set to begin play
   def InitializeBoard(self):
     self.mark_invalid_spaces();
-    # self.set_pieces_to_default();
-    # self.PrintBoard();
 
   # mark invalid spaces
   def mark_invalid_spaces(self):
@@ -274,6 +272,7 @@ class Board:
       self.PRINT_QUEUE = '';
     print('');
 
+  # is used by Interface to create game board state from camera data
   def CreateNewBoardFromInterface(self, list_in):
     b, r = 0, 0;
     for each in list_in:

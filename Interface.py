@@ -7,10 +7,10 @@ class Interface():
   def __init__(self):
     self.pixels_per_square = 26;
     self.BEST_CAMERA_CAPTURE = ['sample 330:',
-    # '[SIG=red X=202 Y=88 AGE=255]', #
+    '[SIG=red X=202 Y=88 AGE=255]', #
     '[SIG=red X=75 Y=110 AGE=255]',
     '[SIG=pink X=82 Y=62 AGE=255]',
-    '[SIG=pink X=199 Y=139 AGE=255]',
+    # '[SIG=pink X=199 Y=139 AGE=255]', # only leave this for red to show win
     '[SIG=blue X=227 Y=117 AGE=255]',
     '[SIG=green X=228 Y=66 AGE=255]',
     # '[SIG=blue X=99 Y=89 AGE=255]', #
@@ -22,18 +22,19 @@ class Interface():
     '[SIG=green X=106 Y=41 AGE=255]',
     '[SIG=green X=124 Y=118 AGE=255]'];
 
-  def CreateGameBoard(self, piece_lst):
+  def CreateGameBoard(self, piece_lst, ai_turn):
     parsed_lst = [];
 
     board_obj = Board();
     board_obj.InitializeBoard();
+    board_obj.AI_TURN = ai_turn;
     piece_lst = self.BEST_CAMERA_CAPTURE; # REMOVE!!!
-    parsed_lst = self.parse_camera_data(piece_lst, board_obj);
-    print(parsed_lst)
+    parsed_lst = self.parse_camera_data(piece_lst);
+    print(parsed_lst); # just for debug
     board_obj = board_obj.CreateNewBoardFromInterface(parsed_lst);
     return board_obj;
 
-  def parse_camera_data(self, piece_lst, board_obj):
+  def parse_camera_data(self, piece_lst):
     pieces = [];
     try:
       for each in piece_lst:
@@ -54,10 +55,10 @@ class Interface():
     place = [y_loc, x_loc];
     return place;
 
-  def TranslateXToPacket(self, x):
-    COLUMN_KEY = {'A': 7, 'B': 6, 'C': 5, 'D': 4, 'E': 3, 'F': 2, 'G': 1, 'H': 0};
-    x_t = list(COLUMN_KEY.keys())[list(COLUMN_KEY.values()).index(x)];
-    return x_t;
+  # def TranslateXToPacket(self, x):
+  #   COLUMN_KEY = {'A': 7, 'B': 6, 'C': 5, 'D': 4, 'E': 3, 'F': 2, 'G': 1, 'H': 0};
+  #   x_t = list(COLUMN_KEY.keys())[list(COLUMN_KEY.values()).index(x)];
+  #   return x_t;
 
   def TranslateXToBoard(self, x):
     COLUMN_KEY = {0: 7, 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1, 7: 0};
