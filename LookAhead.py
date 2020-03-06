@@ -18,7 +18,7 @@ class LookAhead:
             row, column = board_obj.get_checker_location_from_name(checker);
             moves = self.CanCheckerMove(board_obj, checker);
             if len(moves) == 0:
-              continue;   #### SHOULD I BREAK??????????
+              continue;
             for each in moves:
               # unique to kings
               checker_obj = board_obj.get_checker_object_from_name(checker);
@@ -37,13 +37,15 @@ class LookAhead:
               checker_obj = new_board_obj.get_checker_object_from_name(checker);
               is_king_after = checker_obj.isKing;
               is_kinged =  (is_king_before == False) and (is_king_after == True); # Push this through all functs
+              if is_kinged:
+                score += 15;
               boards.append([checker, [each[0], each[1]], '', new_board_obj, [row, column], is_kinged]); # packing up the same as get_all_jumps
               check = self.CheckForOpponentJumps(new_board_obj);  # checking to see if this move makes me jumpable
               if check != []:
                 for every in range(len(check[0][2])):
                   score -= 20;
               if each[1] < 6 or each[1] > 1:  # points for staying toward the middle
-                score += 2;
+                score += 2; # make this weight smarter
               best.append(score);
               score = 0;
         x = best.index(max(best));
@@ -72,6 +74,8 @@ class LookAhead:
           checker_obj = new_board_obj.get_checker_object_from_name(checker);
           is_king_after = checker_obj.isKing;
           is_kinged = (is_king_before == False) and (is_king_after == True);
+          if is_kinged:
+            score += 15;
           poss_moves[i].append(is_kinged);
           check = self.CheckForOpponentJumps(board_obj) # checking to see if this move makes me jumpable
           if check != []:

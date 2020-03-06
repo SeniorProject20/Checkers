@@ -61,18 +61,18 @@ class Interface():
     # '[SIG=blue X=86 Y=171]'];
 
     # red has 4 jumps
-    self.BEST_CAMERA_CAPTURE = ['[SIG=red X=160 Y=37]',
-    '[SIG=red X=186 Y=9]',
-    '[SIG=red X=55 Y=36]',
-    '[SIG=red X=135 Y=67]',
-    '[SIG=blue X=135 Y=172]',
-    '[SIG=red X=109 Y=39]',
-    '[SIG=red X=240 Y=66]',
-    '[SIG=red X=81 Y=10]',
-    '[SIG=red X=215 Y=40]',
-    '[SIG=red X=189 Y=68]',
-    '[SIG=blue X=80 Y=118]',
-    '[SIG=blue X=80 Y=66]'];
+    # self.BEST_CAMERA_CAPTURE = ['[SIG=red X=160 Y=37]',
+    # '[SIG=red X=186 Y=9]',
+    # '[SIG=red X=55 Y=36]',
+    # '[SIG=red X=135 Y=67]',
+    # '[SIG=blue X=135 Y=172]',
+    # '[SIG=red X=109 Y=39]',
+    # '[SIG=red X=240 Y=66]',
+    # '[SIG=red X=81 Y=10]',
+    # '[SIG=red X=215 Y=40]',
+    # '[SIG=red X=189 Y=68]',
+    # '[SIG=blue X=80 Y=118]',
+    # '[SIG=blue X=80 Y=66]'];
     
     # No Jumps
     # self.BEST_CAMERA_CAPTURE = ['[SIG=pink X=80 Y=64]',
@@ -98,7 +98,7 @@ class Interface():
     board_obj = Board();
     board_obj.InitializeBoard();
     board_obj.AI_TURN = ai_turn;
-    piece_lst = self.BEST_CAMERA_CAPTURE; # REMOVE!!!
+    # piece_lst = self.BEST_CAMERA_CAPTURE; # REMOVE!!!
     print(len(piece_lst))
     parsed_lst = self.parse_camera_data(piece_lst);
     print(parsed_lst); # just for debug

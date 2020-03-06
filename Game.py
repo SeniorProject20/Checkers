@@ -85,6 +85,7 @@ class Game:
       else: # black checker case
         bl += 1;
     if r == 0 or bl == 0 or b.MOVES_WITHOUT_JUMP > 14:
+      self.GAME_OVER = True;
       return True;
     else:
       return False;
@@ -138,52 +139,57 @@ class Game:
       pass;
 
 if __name__ == '__main__':
+  Game_obj = Game();
+  Interface = Interface();
+  LA = LookAhead();
+  pixy_obj = Blocks();
+  control = cb.CheckerBoardControl();
   while (1):
     move_counter = 0;
     start_time = time.time();
-    Game_obj = Game();
-    Interface = Interface();
-    LA = LookAhead();
     B_obj = Board();
-    # pixy_obj = Blocks();
-    # control = cb.CheckerBoardControl();
-    # control.SetButtonLED(False);
-    # control.Home();
+    control.SetButtonLED(False);
+    control.Home();
     first = True;
     while not Game_obj.GAME_OVER:
       if (move_counter > 4):
         # control.Home();
         pass;
-      if True: #control.STAND_ALONE:
-        # control.SetButtonLED(False);
+      if control.STAND_ALONE:
+        control.SetButtonLED(False);
         B_obj.AI_TURN = not B_obj.AI_TURN;
-        B_obj.MOVES_WITHOUT_JUMP += 1;
-        piece_lst = [];
-        # piece_lst = pixy_obj.get_pixy_data();
-        if first:
-          B_obj = Interface.CreateGameBoard(piece_lst, B_obj.AI_TURN);
-          B_obj.PrintBoard();
+        # piece_lst = [];
+        piece_lst = pixy_obj.get_pixy_data();
+        # if first:
+        B_obj = Interface.CreateGameBoard(piece_lst, B_obj.AI_TURN);
+        B_obj.PrintBoard();
         first = False;
         move_info = LA.IsJumpPossible(B_obj);
         from_place = str(Game_obj.translate_list_to_board(move_info[4])).replace("'", '');
         to_place = str(Game_obj.translate_list_to_board(move_info[1])).replace("'", '');
-        # control.MovePiece(from_place, to_place);
+        control.MovePiece(from_place, to_place);
         move_counter += 1;
         if move_info[2] != '':
           for jumped_checkers in move_info[2]:
             location = B_obj.get_checker_location_from_name(jumped_checkers);
             jumped_checker_place = str(Game_obj.translate_list_to_board(location)).replace("'", '');
             move_counter += 1;
-            # control.RemovePiece(jumped_checker_place);
+            control.RemovePiece(jumped_checker_place);
           B_obj.MOVES_WITHOUT_JUMP = 0;
           pieces = str(move_info[2]).replace("'", '');
           pieces = pieces.replace('[', '');
           pieces = pieces.replace(']', '');
           pieces = pieces.replace(',', ' &');
           pieces = pieces.replace('  ', ' ');
-          print('AI moved {} to {} jumping {}\n'.format(str(move_info[0]).strip(' '), to_place, pieces));
+          if B_obj.AI_TURN:
+            print('Blue moved {} to {} jumping {}\n'.format(str(move_info[0]).strip(' '), to_place, pieces));
+          else:
+            print('Red moved {} to {} jumping {}\n'.format(str(move_info[0]).strip(' '), to_place, pieces));
         else:
-          print('AI moved {} to {}\n'.format(str(move_info[0]).strip(' '), to_place));
+          if B_obj.AI_TURN:
+            print('Blue moved {} to {}\n'.format(str(move_info[0]).strip(' '), to_place));
+          else:
+            print('Red moved {} to {}\n'.format(str(move_info[0]).strip(' '), to_place));
         if move_info[5]: # got kinged
           #do something from board control
           pass;
@@ -192,23 +198,23 @@ if __name__ == '__main__':
 
       else:
         print("AI's turn:");
-        # control.SetButtonLED(True);
-        # control.WaitForButton();
-        # control.SetButtonLED(False);
-        piece_lst = [];
-        # piece_lst = pixy_obj.get_pixy_data();
+        control.SetButtonLED(True);
+        control.WaitForButton();
+        control.SetButtonLED(False);
+        # piece_lst = [];
+        piece_lst = pixy_obj.get_pixy_data();
         B_obj = Interface.CreateGameBoard(piece_lst, True); # always AI turn in this game mode
         B_obj.PrintBoard();
         move_info = LA.IsJumpPossible(B_obj);
         from_place = Game_obj.translate_list_to_board(move_info[4]);
         to_place = Game_obj.translate_list_to_board(move_info[1]);
-        # control.MovePiece(from_place, to_place);
+        control.MovePiece(from_place, to_place);
         move_counter += 1;
         if move_info[2] != '':
           for jumped_checkers in move_info[2]:
             location = B_obj.get_checker_location_from_name(jumped_checkers);
             jumped_checker_place = str(Game_obj.translate_list_to_board(location));
-            # control.RemovePiece(jumped_checker_place);
+            control.RemovePiece(jumped_checker_place);
             move_counter += 1;
           pieces = str(move_info[2]).replace("'", '');
           pieces = pieces.replace('[', '');
@@ -238,6 +244,8 @@ if __name__ == '__main__':
           print('\nGame is a Draw\n');
           #do something else
         print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
-        # control.SetButtonLED(True);
-        # control.WaitForButton();
+        del(B_obj); # deleting game object in preperation of new game
+        Game_obj.GAME_OVER = False;
+        control.SetButtonLED(True); # Wait for new game to be acknowledged
+        control.WaitForButton();
         break; # Just start a new game

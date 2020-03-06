@@ -47,7 +47,7 @@ class Board:
     if self.is_move_valid(checker_obj, current_row, current_column, new_row, new_column):
       self.board[new_row][new_column] = checker_name;
       self.board[current_row][current_column] = self.FREE_SPACE;
-      if (new_row == 0 and checker_obj.color == 'red') or (new_row == 7 and checker_obj.color == 'black'):
+      if (new_row == 7 and checker_obj.color == 'red') or (new_row == 0 and checker_obj.color == 'black'):
         self.PRINT_QUEUE = checker_obj.KingMe();
       if can_print:
         self.PrintBoard();
@@ -91,7 +91,7 @@ class Board:
         # print('Your row selection was wrong.');
         return False;
     elif checker_obj.color == 'black':
-      if (new_row == current_row + 1):
+      if (new_row == current_row - 1):
         if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
           return True;
         else:
@@ -101,7 +101,7 @@ class Board:
         # print('Your row selection was wrong.');
         return False;
     elif checker_obj.color == 'red':
-      if (new_row == (current_row - 1)):
+      if (new_row == (current_row + 1)):
         if (new_column == (current_column + 1)) or (new_column == (current_column - 1)):
           return True;
         else:
