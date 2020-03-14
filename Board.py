@@ -173,9 +173,9 @@ class Board:
       return False;
 
   # gets the obj of the checker that is to be jumped based on coordinates
-  def get_checker_obj_to_jump(self, checker, current_row, current_column, left, move_forward):
+  def get_checker_obj_to_jump(self, checker, current_row, current_column, left, up):
     move_up, move_down, move_left, move_right = current_row + 1, current_row - 1, current_column - 1, current_column + 1;
-    if move_forward:
+    if up:
       if left:
         if self.board[move_up][move_left] == self.FREE_SPACE or \
             self.get_checker_obj_from_index(move_up, move_left).color == checker.color:
@@ -316,4 +316,5 @@ class Board:
       if name != None:
         self.board[row][column] = name;
         name = None;
+    print('# on board: ' + str(r + b));
     return self;

@@ -23,9 +23,9 @@ class LookAhead:
               # unique to kings
               checker_obj = board_obj.get_checker_object_from_name(checker);
               is_king_before = checker_obj.isKing;
+              score += self.PointForStayingCenter(each[1]);  # points for staying toward the middle
               if checker_obj.isKing:  # point for staying toward the middle
-                if each[0] < 6 or each[0] > 2:
-                  score += 2;
+                score += self.PointForStayingCenter(each[0]) * 2;  # points for staying toward the middle
               else:  # unique to non-kings
                 if letter == 'B':
                   score += (7 - each[0]) * 2;
@@ -44,8 +44,6 @@ class LookAhead:
               if check != []:
                 for every in range(len(check[0][2])):
                   score -= 20;
-              if each[1] < 6 or each[1] > 1:  # points for staying toward the middle
-                score += 2; # make this weight smarter
               best.append(score);
               score = 0;
         x = best.index(max(best));
@@ -60,9 +58,9 @@ class LookAhead:
           # unique to kings
           checker_obj = board_obj.get_checker_object_from_name(checker);
           is_king_before = checker_obj.isKing;
+          score += self.PointForStayingCenter(poss_moves[i][1][1]);  # point for staying toward the middle
           if checker_obj.isKing: # point for staying toward the middle
-            if poss_moves[i][1][0] < 6 or poss_moves[i][1][0] > 2:
-              score += 2;
+            score += self.PointForStayingCenter(poss_moves[i][1][0]) * 2;
           else: # unique to non-kings
             if letter == 'B':
               score += (7 - (poss_moves[i][1][0])) * 2;
@@ -83,14 +81,22 @@ class LookAhead:
               score -= 20;
           for each in poss_moves[i][2]: # point for each checker that you can jump
             score += 20;
-          if poss_moves[i][1][1] < 6 or poss_moves[i][1][1] > 1: # point for staying toward the middle
-            score += 2;
           best.append(score);
           i += 1;
         x = best.index(max(best));
       return poss_moves[x];
     except (IndexError, TypeError) as e:
       print(str(e));
+
+  def PointForStayingCenter(self, position):
+    if position == 0 or position == 7:
+      return 1;
+    if position == 1 or position == 6:
+      return 2;
+    if position == 2 or position == 5:
+      return 3;
+    if position == 3 or position == 4:
+      return 4;
 
   # local function to keep track of all jumps possible by a checker
   def get_all_jumps(self, board_obj, checker, poss_moves):

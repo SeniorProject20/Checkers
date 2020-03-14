@@ -99,9 +99,9 @@ class Interface():
     board_obj.InitializeBoard();
     board_obj.AI_TURN = ai_turn;
     # piece_lst = self.BEST_CAMERA_CAPTURE; # REMOVE!!!
-    print(len(piece_lst))
+    print('# from cam: ' + str(len(piece_lst)))
     parsed_lst = self.parse_camera_data(piece_lst);
-    print(parsed_lst); # just for debug
+    # print(parsed_lst); # just for debug
     board_obj = board_obj.CreateNewBoardFromInterface(parsed_lst);
     return board_obj;
 
