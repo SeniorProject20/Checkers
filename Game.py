@@ -152,19 +152,19 @@ if __name__ == '__main__':
     # control.Home();
     first = True;
     while not Game_obj.GAME_OVER:
-      if (move_counter > 4):
-        control.Home();
-        move_counter = 0;
-        pass;
-      if False: #control.STAND_ALONE:
+      # if (move_counter > 4):
+      #   # control.Home();
+      #   move_counter = 0;
+      #   pass;
+      if True: #control.STAND_ALONE:
         # control.SetButtonLED(False);
         B_obj.AI_TURN = not B_obj.AI_TURN;
         piece_lst = [];
         # piece_lst = pixy_obj.get_pixy_data();
-        # if first:
-        B_obj = Interface.CreateGameBoard(piece_lst, B_obj.AI_TURN);
-        B_obj.PrintBoard();
-        first = False;
+        if first:
+          B_obj = Interface.CreateGameBoard(piece_lst, B_obj.AI_TURN);
+          B_obj.PrintBoard();
+          first = False;
         move_info = LA.IsJumpPossible(B_obj);
         from_place = str(Game_obj.translate_list_to_board(move_info[4])).replace("'", '');
         to_place = str(Game_obj.translate_list_to_board(move_info[1])).replace("'", '');
@@ -247,6 +247,7 @@ if __name__ == '__main__':
           print('\nGame is a Draw\n');
           #do something else
         print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
+        print('moves: ' + str(move_counter))
         del(B_obj); # deleting game object in preperation of new game
         Game_obj.GAME_OVER = False;
         # control.SetButtonLED(True); # Wait for new game to be acknowledged

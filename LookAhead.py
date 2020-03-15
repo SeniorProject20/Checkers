@@ -3,14 +3,13 @@ from Checker import Checker;
 
 class LookAhead:
 
+  NUMBER_OF_LOOK_AHEAD_STEPS = 5;
+
   # Looks at possible boards and selects best one
   def ChooseBestMove(self, poss_moves, board_obj):
-    i, score, best, boards = 0, 0, [], [];
+    step, i, score, boards, best = 0, 0, 0, [], [[] for i in range(self.NUMBER_OF_LOOK_AHEAD_STEPS)];
     try:
-      if board_obj.AI_TURN:
-        letter = 'B';
-      else:
-        letter = 'R';
+      letter = 'B' if board_obj.AI_TURN else 'R';
       # if no jumps are possible pick the best possible move
       if len(poss_moves) == 0:
         for checker in board_obj.CHECKERS:
@@ -20,74 +19,194 @@ class LookAhead:
             if len(moves) == 0:
               continue;
             for each in moves:
-              # unique to kings
-              checker_obj = board_obj.get_checker_object_from_name(checker);
-              is_king_before = checker_obj.isKing;
-              score += self.PointForStayingCenter(each[1]);  # points for staying toward the middle
-              if checker_obj.isKing:  # point for staying toward the middle
-                score += self.PointForStayingCenter(each[0]) * 2;  # points for staying toward the middle
-              else:  # unique to non-kings
-                if letter == 'B':
-                  score += (7 - each[0]) * 2;
+              temp_board = board_obj;
+              r, c = each[0], each[1];
+              for step in range(self.NUMBER_OF_LOOK_AHEAD_STEPS):
+                if step == 0:
+                  score, boards, new_board_obj = self.CheckFirstTurn(temp_board, checker, r, c, boards, row, column);
+                  score = score * 2;
+                  best[step].append(score);
                 else:
-                  score += each[0] * 2;
-              # common to kings and not kings
-              new_board_obj = board_obj.CopyBoard();
-              new_board_obj.Move(checker, each[0], each[1]);
-              checker_obj = new_board_obj.get_checker_object_from_name(checker);
-              is_king_after = checker_obj.isKing;
-              is_kinged =  (is_king_before == False) and (is_king_after == True); # Push this through all functs
-              if is_kinged:
-                score += 15;
-              boards.append([checker, [each[0], each[1]], '', new_board_obj, [row, column], is_kinged]); # packing up the same as get_all_jumps
-              check = self.CheckForOpponentJumps(new_board_obj);  # checking to see if this move makes me jumpable
-              if check != []:
-                for every in range(len(check[0][2])):
-                  score -= 20;
-              best.append(score);
-              score = 0;
-        x = best.index(max(best));
-        return boards[x];
+                  score, boards, new_board_obj = self.CheckNextTurns(temp_board, checker, boards);
+                  score = int(score * (1 / step));
+                  best[step].append(score);
+                score = 0;
+                temp_board = new_board_obj;
+                letter = 'B' if letter == 'R' else 'R';
+                temp_board.AI_TURN = not temp_board.AI_TURN;
+        j = len(best) - 1;
+        while j >= 0:
+          temp_score = sum(best[j]);
+          best.pop(j);
+          best.append(temp_score);
+          j -= 1;
+        best.reverse();
+        higest = best.index(max(best));
+        # higest = [max(x) for x in best];
+        # higest = higest.index(max(higest));
+        return boards[higest];
 
-      # if jumps are possible, pick the best one
+      # if jumps are possible, pick the best one, no point in looking further ahead as jumps are mandatory.
       else:
         while (i < len(poss_moves)):
-          score = 0;
           board_obj = poss_moves[i][3];
           checker = poss_moves[i][0];
-          # unique to kings
           checker_obj = board_obj.get_checker_object_from_name(checker);
-          is_king_before = checker_obj.isKing;
-          score += self.PointForStayingCenter(poss_moves[i][1][1]);  # point for staying toward the middle
-          if checker_obj.isKing: # point for staying toward the middle
-            score += self.PointForStayingCenter(poss_moves[i][1][0]) * 2;
-          else: # unique to non-kings
-            if letter == 'B':
-              score += (7 - (poss_moves[i][1][0])) * 2;
-            else:
-              score += (poss_moves[i][1][0]) * 2;
-          # common to kings and not kings
           new_board_obj = board_obj.CopyBoard();
           new_board_obj.Move(checker, poss_moves[i][1][0], poss_moves[i][1][1]);
-          checker_obj = new_board_obj.get_checker_object_from_name(checker);
-          is_king_after = checker_obj.isKing;
-          is_kinged = (is_king_before == False) and (is_king_after == True);
-          if is_kinged:
-            score += 15;
-          poss_moves[i].append(is_kinged);
+          new_checker_obj = new_board_obj.get_checker_object_from_name(checker);
+          became_kinged = (checker_obj.isKing == False) and (new_checker_obj.isKing == True);
+          poss_moves[i].append(became_kinged);
           check = self.CheckForOpponentJumps(board_obj) # checking to see if this move makes me jumpable
           if check != []:
-            for each in range(len(check[0][2])):
-              score -= 20;
-          for each in poss_moves[i][2]: # point for each checker that you can jump
-            score += 20;
-          best.append(score);
+            if poss_moves[i][2] != []:
+              score = self.CalculateScore(poss_moves[i][1][0], poss_moves[i][1][1], letter, checker_obj.isKing,
+                                           became_kinged, len(check[0][2]), len(poss_moves[i][2]));
+            else:
+              score = self.CalculateScore(poss_moves[i][1][0], poss_moves[i][1][1], letter, checker_obj.isKing,
+                                          became_kinged, len(check[0][2]), 0);
+          else:
+            if poss_moves[i][2] != []:
+              score = self.CalculateScore(poss_moves[i][1][0], poss_moves[i][1][1], letter, checker_obj.isKing,
+                                          became_kinged, 0, len(poss_moves[i][2]));
+            else:
+              score = self.CalculateScore(poss_moves[i][1][0], poss_moves[i][1][1], letter, checker_obj.isKing,
+                                          became_kinged, 0, 0);
+          best[step].append(score);
+          score = 0;
           i += 1;
-        x = best.index(max(best));
+        x = best[step].index(max(best[step]));
+
       return poss_moves[x];
     except (IndexError, TypeError) as e:
-      print(str(e));
+      print('ChooseBestMove ' + str(e));
 
+  def CheckFirstTurn(self, temp_board, checker, r, c, boards, row, column):
+    try:
+      letter = 'B' if temp_board.AI_TURN else 'R';
+      checker_obj = temp_board.get_checker_object_from_name(checker);
+      new_board_obj = temp_board.CopyBoard();
+      new_board_obj.Move(checker, r, c);
+      new_checker_obj = new_board_obj.get_checker_object_from_name(checker);
+      # Checking if checker gets kinged because of this move
+      became_kinged = (checker_obj.isKing == False) and (new_checker_obj.isKing == True);
+      # packing up the same as get_all_jumps
+      boards.append([checker, [r, c], '', new_board_obj, [row, column], became_kinged]);
+      # checking to see if this move makes me jumpable
+      check = self.CheckForOpponentJumps(new_board_obj);
+      if check != []:
+        score = self.CalculateScore(r, c, letter, checker_obj.isKing, became_kinged, len(check[0][2]), 0);
+      else:
+        score = self.CalculateScore(r, c, letter, checker_obj.isKing, became_kinged, 0, 0);
+      return score, boards, new_board_obj;
+    except (IndexError, TypeError) as e:
+      print('CheckFirstTurn ' + str(e));
+
+  def CheckNextTurns(self, temp_board, checker, boards):
+    poss_moves, most_jumps = [], [];
+    try:
+      poss_moves = self.GetAllJumps(temp_board, checker, poss_moves);
+      if poss_moves != []:
+        score, new_return = self.GetBestJumpMove(poss_moves);
+      else:
+        score, new_return = self.GetBestSingleMove(temp_board);
+
+      new_board_obj = new_return[3];
+      boards.append(new_return)
+
+      return score, boards, new_board_obj;
+    except (IndexError, TypeError) as e:
+      print('CheckNextTurns ' + str(e));
+
+  def GetBestSingleMove(self, temp_board):
+    best, score, boards = [], 0, [];
+    try:
+      letter = 'B' if temp_board.AI_TURN else 'R';
+      for checker in temp_board.CHECKERS:
+        if checker.startswith(letter):
+          row, column = temp_board.get_checker_location_from_name(checker);
+          moves = self.CanCheckerMove(temp_board, checker);
+          if len(moves) == 0:
+            continue;
+          for each in moves:
+            r, c = each[0], each[1];
+            checker_obj = temp_board.get_checker_object_from_name(checker);
+            new_board_obj = temp_board.CopyBoard();
+            new_board_obj.Move(checker, r, c);
+            new_checker_obj = new_board_obj.get_checker_object_from_name(checker);
+            became_kinged = (checker_obj.isKing == False) and (new_checker_obj.isKing == True);
+            boards.append([checker, [r, c], '', new_board_obj, [row, column], became_kinged]);  # packing up the same as get_all_jumps
+            check = self.CheckForOpponentJumps(new_board_obj);  # checking to see if this move makes me jumpable
+            if check != []:
+              score = self.CalculateScore(r, c, letter, checker_obj.isKing, became_kinged, len(check[0][2]), 0);
+            else:
+              score = self.CalculateScore(r, c, letter, checker_obj.isKing, became_kinged, 0, 0);
+            best.append(score);
+            score = 0;
+      x = best.index(max(best));
+      return max(best), boards[x];
+    except (IndexError, TypeError) as e:
+      print('GetBestSingleMove ' + str(e));
+
+  def GetBestJumpMove(self, poss_moves):
+    try:
+      i, best = 0, [];
+      while (i < len(poss_moves)):
+        score = 0;
+        board_obj = poss_moves[i][3];
+        letter = 'B' if board_obj.AI_TURN else 'R';
+        checker = poss_moves[i][0];
+        checker_obj = board_obj.get_checker_object_from_name(checker);
+        new_board_obj = board_obj.CopyBoard();
+        new_board_obj.Move(checker, poss_moves[i][1][0], poss_moves[i][1][1]);
+        new_checker_obj = new_board_obj.get_checker_object_from_name(checker);
+        became_kinged = (checker_obj.isKing == False) and (new_checker_obj.isKing == True);
+        poss_moves[i].append(became_kinged);
+        check = self.CheckForOpponentJumps(board_obj)  # checking to see if this move makes me jumpable
+        check = self.CheckForOpponentJumps(new_board_obj);  # checking to see if this move makes me jumpable
+        if check != []:
+          if poss_moves[i][2] != []:
+            score = self.CalculateScore(poss_moves[i][1][0], poss_moves[i][1][1], letter, checker_obj.isKing,
+                                        became_kinged, len(check[0][2]), len(poss_moves[i][2]));
+          else:
+            score = self.CalculateScore(poss_moves[i][1][0], poss_moves[i][1][1], letter, checker_obj.isKing,
+                                        became_kinged, len(check[0][2]), 0);
+        else:
+          if poss_moves[i][2] != []:
+            score = self.CalculateScore(poss_moves[i][1][0], poss_moves[i][1][1], letter, checker_obj.isKing,
+                                        became_kinged, 0, len(poss_moves[i][2]));
+          else:
+            score = self.CalculateScore(poss_moves[i][1][0], poss_moves[i][1][1], letter, checker_obj.isKing,
+                                        became_kinged, 0, 0);
+        best.append(score);
+        i += 1;
+      x = best.index(max(best));
+      return max(best), poss_moves[x];
+    except (IndexError, TypeError) as e:
+      print('GetBestJumpMove ' + str(e));
+
+  # Takes all the info from ChooseBestMove to calculate a score
+  def CalculateScore(self, row, column, letter, currently_kinged, became_kinged, opp_jumps_poss, my_jumps):
+    try:
+      score = 0;
+      score += self.PointForStayingCenter(column);  # points for staying toward the middle
+      if currently_kinged:  # point for staying toward the middle
+        score += self.PointForStayingCenter(row) * 2;  # unique to kings
+      else:  # unique to non-kings
+        score += ((7 - row) * 2) if letter == 'B' else (row * 2);
+
+      if became_kinged:
+        score += 15;
+
+      score -= opp_jumps_poss * 20;
+      score += my_jumps * 20;
+
+      return score;
+
+    except (IndexError, TypeError) as e:
+      print('CalculateScore' + str(e));
+
+  # Calculates more points for staying toward the center of the board
   def PointForStayingCenter(self, position):
     if position == 0 or position == 7:
       return 1;
@@ -99,7 +218,7 @@ class LookAhead:
       return 4;
 
   # local function to keep track of all jumps possible by a checker
-  def get_all_jumps(self, board_obj, checker, poss_moves):
+  def GetAllJumps(self, board_obj, checker, poss_moves):
     poss_jumps_list, pieces_to_jump, spot, start_pos, multi = [], [], [], [], False;
     poss_jumps_list = self.CanCheckerJump(board_obj, checker);
     row, column = board_obj.get_checker_location_from_name(checker);
@@ -133,15 +252,15 @@ class LookAhead:
       if board_obj.AI_TURN:
         for checker in board_obj.CHECKERS:
           if checker.startswith('B'):
-            poss_moves = self.get_all_jumps(board_obj, checker, poss_moves);
+            poss_moves = self.GetAllJumps(board_obj, checker, poss_moves);
         return self.ChooseBestMove(poss_moves, board_obj);
       else:
         for checker in board_obj.CHECKERS:
           if checker.startswith('R'):
-            poss_moves = self.get_all_jumps(board_obj, checker, poss_moves);
-      return self.ChooseBestMove(poss_moves, board_obj); #poss_moves;
+            poss_moves = self.GetAllJumps(board_obj, checker, poss_moves);
+        return self.ChooseBestMove(poss_moves, board_obj);
     except (IndexError, TypeError) as e:
-      print(e);
+      print('IsJumpPossible ' + str(e));
 
   # Same as IsJumpPossible, but doesn't recurse for ChooseBestMove
   def CheckForOpponentJumps(self, board_obj):
@@ -150,15 +269,15 @@ class LookAhead:
       if not board_obj.AI_TURN:
         for checker in board_obj.CHECKERS:
           if checker.startswith('B'):
-            poss_moves = self.get_all_jumps(board_obj, checker, poss_moves);
+            poss_moves = self.GetAllJumps(board_obj, checker, poss_moves);
         return poss_moves;
       else:
         for checker in board_obj.CHECKERS:
           if checker.startswith('R'):
-            poss_moves = self.get_all_jumps(board_obj, checker, poss_moves);
+            poss_moves = self.GetAllJumps(board_obj, checker, poss_moves);
       return poss_moves;
     except (IndexError, TypeError) as e:
-      print(e);
+      print('CheckForOpponentJumps' + str(e));
 
   # determins if a given checker can move or if it is trapped
   def CanCheckerMove(self, board_obj, checker):
@@ -170,44 +289,44 @@ class LookAhead:
       if checker_obj.isKing:
         if row < 7 and column < 7:
           u_r = board_obj.board[row + 1][column + 1];
-          dest = self.dest_move_check(u_r, 1, 1, row, column);
+          dest = self.DestMoveCheck(u_r, 1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row > 0 and column < 7:
           d_r = board_obj.board[row - 1][column + 1];
-          dest = self.dest_move_check(d_r, -1, 1, row, column);
+          dest = self.DestMoveCheck(d_r, -1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row < 7 and column > 0:
           u_l = board_obj.board[row + 1][column - 1];
-          dest = self.dest_move_check(u_l, 1, -1, row, column);
+          dest = self.DestMoveCheck(u_l, 1, -1, row, column);
           if dest != None:
             moves.append(dest);
         if row > 0 and column > 0:
           d_l = board_obj.board[row - 1][column - 1];
-          dest = self.dest_move_check(d_l, -1, -1, row, column);
+          dest = self.DestMoveCheck(d_l, -1, -1, row, column);
           if dest != None:
             moves.append(dest);
       elif checker_obj.color == 'black':
         if row > 0 and column < 7:
           d_r = board_obj.board[row - 1][column + 1];
-          dest = self.dest_move_check(d_r, -1, 1, row, column);
+          dest = self.DestMoveCheck(d_r, -1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row > 0 and column > 0:
           d_l = board_obj.board[row - 1][column - 1];
-          dest = self.dest_move_check(d_l, -1, -1, row, column);
+          dest = self.DestMoveCheck(d_l, -1, -1, row, column);
           if dest != None:
             moves.append(dest);
       else:
         if row < 7 and column < 7:
           u_r = board_obj.board[row + 1][column + 1];
-          dest = self.dest_move_check(u_r, 1, 1, row, column);
+          dest = self.DestMoveCheck(u_r, 1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row < 7 and column > 0:
           u_l = board_obj.board[row + 1][column - 1];
-          dest = self.dest_move_check(u_l, 1, -1, row, column);
+          dest = self.DestMoveCheck(u_l, 1, -1, row, column);
           if dest != None:
             moves.append(dest);
       return moves;
@@ -215,7 +334,7 @@ class LookAhead:
       pass;
     
   # populates the moves list for CanCheckerMove
-  def dest_move_check(self, space, v, h, row, column):
+  def DestMoveCheck(self, space, v, h, row, column):
     if space == Board.FREE_SPACE:
       return [row + v , column + h];
     else:
@@ -231,53 +350,52 @@ class LookAhead:
       if checker_obj.isKing:
         if row < 6 and column < 6:
           u_r = board_obj.board[row + 1][column + 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_r, 1, 1, row, column);
+          dest = self.DestJumpCheck(board_obj, checker_obj, u_r, 1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row > 1 and column < 6:
           d_r = board_obj.board[row - 1][column + 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, d_r, -1, 1, row, column);
+          dest = self.DestJumpCheck(board_obj, checker_obj, d_r, -1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row < 6 and column > 1:
           u_l = board_obj.board[row + 1][column - 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_l, 1, -1, row, column);
+          dest = self.DestJumpCheck(board_obj, checker_obj, u_l, 1, -1, row, column);
           if dest != None:
             moves.append(dest);
         if row > 1 and column > 1:
           d_l = board_obj.board[row - 1][column - 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, d_l, -1, -1, row, column);
+          dest = self.DestJumpCheck(board_obj, checker_obj, d_l, -1, -1, row, column);
           if dest != None:
             moves.append(dest);
       elif checker_obj.color == 'black':
         if row > 1 and column < 6:
           d_r = board_obj.board[row - 1][column + 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, d_r, -1, 1, row, column);
+          dest = self.DestJumpCheck(board_obj, checker_obj, d_r, -1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row > 1 and column > 1:
           d_l = board_obj.board[row - 1][column - 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, d_l, -1, -1, row, column);
+          dest = self.DestJumpCheck(board_obj, checker_obj, d_l, -1, -1, row, column);
           if dest != None:
             moves.append(dest);
       else:
         if row < 6 and column < 6:
           u_r = board_obj.board[row + 1][column + 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_r, 1, 1, row, column);
+          dest = self.DestJumpCheck(board_obj, checker_obj, u_r, 1, 1, row, column);
           if dest != None:
             moves.append(dest);
         if row < 6 and column > 1:
           u_l = board_obj.board[row + 1][column - 1];
-          dest = self.dest_jump_check(board_obj, checker_obj, u_l, 1, -1, row, column);
+          dest = self.DestJumpCheck(board_obj, checker_obj, u_l, 1, -1, row, column);
           if dest != None:
             moves.append(dest);
       return moves;
     except (IndexError, TypeError) as e:
-      # print(str(e))
       pass;
 
   # verifies the jump is legal for CanCheckerMove
-  def dest_jump_check(self, board_obj, checker_obj, space, v, h, row, column):
+  def DestJumpCheck(self, board_obj, checker_obj, space, v, h, row, column):
     if str(space).startswith('R') or str(space).startswith('B'):
       checker_to_jump_obj = board_obj.get_checker_object_from_name(space);
       if checker_to_jump_obj.color != checker_obj.color and board_obj.board[row + (v * 2)][column + (h * 2)] == Board.FREE_SPACE:

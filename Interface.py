@@ -42,23 +42,23 @@ class Interface():
     # '[SIG=blue X=105 Y=197]'];
 
     # blue has 4 jumps
-    # self.BEST_CAMERA_CAPTURE = ['[SIG=red X=188 Y=120]',
-    # '[SIG=blue X=190 Y=172]',
-    # '[SIG=red X=54 Y=35]',
-    # '[SIG=red X=158 Y=90]',
-    # '[SIG=red X=85 Y=70]',
-    # '[SIG=blue X=109 Y=143]',
-    # '[SIG=red X=83 Y=119]',
-    # '[SIG=blue X=158 Y=198]',
-    # '[SIG=red X=135 Y=67]',
-    # '[SIG=green X=161 Y=144]',
-    # '[SIG=red X=80 Y=12]',
-    # '[SIG=blue X=212 Y=144]',
-    # '[SIG=red X=240 Y=67]',
-    # '[SIG=red X=189 Y=68]',
-    # '[SIG=blue X=52 Y=199]',
-    # '[SIG=blue X=133 Y=168]',
-    # '[SIG=blue X=86 Y=171]'];
+    self.BEST_CAMERA_CAPTURE = ['[SIG=red X=188 Y=120]',
+    '[SIG=blue X=190 Y=172]',
+    '[SIG=red X=54 Y=35]',
+    '[SIG=red X=158 Y=90]',
+    '[SIG=red X=85 Y=70]',
+    '[SIG=blue X=109 Y=143]',
+    '[SIG=red X=83 Y=119]',
+    '[SIG=blue X=158 Y=198]',
+    '[SIG=red X=135 Y=67]',
+    '[SIG=green X=161 Y=144]',
+    '[SIG=red X=80 Y=12]',
+    '[SIG=blue X=212 Y=144]',
+    '[SIG=red X=240 Y=67]',
+    '[SIG=red X=189 Y=68]',
+    '[SIG=blue X=52 Y=199]',
+    '[SIG=blue X=133 Y=168]',
+    '[SIG=blue X=86 Y=171]'];
 
     # red has 4 jumps
     # self.BEST_CAMERA_CAPTURE = ['[SIG=red X=160 Y=37]',
@@ -80,7 +80,6 @@ class Interface():
     # '[SIG=blue X=162 Y=196]',
     # '[SIG=red X=135 Y=65]',
     # '[SIG=blue X=214 Y=201]',
-    # '[SIG=green X=83 Y=174]',
     # '[SIG=red X=55 Y=35]',
     # '[SIG=blue X=135 Y=174]',
     # '[SIG=blue X=190 Y=171]',
@@ -98,7 +97,7 @@ class Interface():
     board_obj = Board();
     board_obj.InitializeBoard();
     board_obj.AI_TURN = ai_turn;
-    # piece_lst = self.BEST_CAMERA_CAPTURE; # REMOVE!!!
+    piece_lst = self.BEST_CAMERA_CAPTURE; # REMOVE!!!
     print('# from cam: ' + str(len(piece_lst)))
     parsed_lst = self.parse_camera_data(piece_lst);
     # print(parsed_lst); # just for debug
