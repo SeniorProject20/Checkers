@@ -42,23 +42,23 @@ class Interface():
     # '[SIG=blue X=105 Y=197]'];
 
     # blue has 4 jumps
-    self.BEST_CAMERA_CAPTURE = ['[SIG=red X=188 Y=120]',
-    '[SIG=blue X=190 Y=172]',
-    '[SIG=red X=54 Y=35]',
-    '[SIG=red X=158 Y=90]',
-    '[SIG=red X=85 Y=70]',
-    '[SIG=blue X=109 Y=143]',
-    '[SIG=red X=83 Y=119]',
-    '[SIG=blue X=158 Y=198]',
-    '[SIG=red X=135 Y=67]',
-    '[SIG=green X=161 Y=144]',
-    '[SIG=red X=80 Y=12]',
-    '[SIG=blue X=212 Y=144]',
-    '[SIG=red X=240 Y=67]',
-    '[SIG=red X=189 Y=68]',
-    '[SIG=blue X=52 Y=199]',
-    '[SIG=blue X=133 Y=168]',
-    '[SIG=blue X=86 Y=171]'];
+    # self.BEST_CAMERA_CAPTURE = ['[SIG=red X=188 Y=120]',
+    # '[SIG=blue X=190 Y=172]',
+    # '[SIG=red X=54 Y=35]',
+    # '[SIG=red X=158 Y=90]',
+    # '[SIG=red X=85 Y=70]',
+    # '[SIG=blue X=109 Y=143]',
+    # '[SIG=red X=83 Y=119]',
+    # '[SIG=blue X=158 Y=198]',
+    # '[SIG=red X=135 Y=67]',
+    # '[SIG=green X=161 Y=144]',
+    # '[SIG=red X=80 Y=12]',
+    # '[SIG=blue X=212 Y=144]',
+    # '[SIG=red X=240 Y=67]',
+    # '[SIG=red X=189 Y=68]',
+    # '[SIG=blue X=52 Y=199]',
+    # '[SIG=blue X=133 Y=168]',
+    # '[SIG=blue X=86 Y=171]'];
 
     # red has 4 jumps
     # self.BEST_CAMERA_CAPTURE = ['[SIG=red X=160 Y=37]',
@@ -75,21 +75,21 @@ class Interface():
     # '[SIG=blue X=80 Y=66]'];
     
     # No Jumps
-    # self.BEST_CAMERA_CAPTURE = ['[SIG=pink X=80 Y=64]',
-    # '[SIG=red X=216 Y=40]',
-    # '[SIG=blue X=162 Y=196]',
-    # '[SIG=red X=135 Y=65]',
-    # '[SIG=blue X=214 Y=201]',
-    # '[SIG=red X=55 Y=35]',
-    # '[SIG=blue X=135 Y=174]',
-    # '[SIG=blue X=190 Y=171]',
-    # '[SIG=red X=240 Y=66]',
-    # '[SIG=red X=161 Y=38]',
-    # '[SIG=red X=185 Y=10]',
-    # '[SIG=red X=189 Y=68]',
-    # '[SIG=red X=107 Y=39]',
-    # '[SIG=red X=80 Y=11]',
-    # '[SIG=blue X=105 Y=198]'];
+    self.BEST_CAMERA_CAPTURE = ['[SIG=pink X=80 Y=64]',
+    '[SIG=red X=216 Y=40]',
+    '[SIG=blue X=162 Y=196]',
+    '[SIG=red X=135 Y=65]',
+    '[SIG=blue X=214 Y=201]',
+    '[SIG=red X=55 Y=35]',
+    '[SIG=blue X=135 Y=174]',
+    '[SIG=blue X=190 Y=171]',
+    '[SIG=red X=240 Y=66]',
+    '[SIG=red X=161 Y=38]',
+    '[SIG=red X=185 Y=10]',
+    '[SIG=red X=189 Y=68]',
+    '[SIG=red X=107 Y=39]',
+    '[SIG=red X=80 Y=11]',
+    '[SIG=blue X=105 Y=198]'];
 
   def CreateGameBoard(self, piece_lst, ai_turn):
     parsed_lst = [];
