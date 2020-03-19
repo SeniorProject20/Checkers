@@ -56,7 +56,7 @@ class Game:
       return None;
 
   # Getting where to move from input
-  def get_move_to_location(self, b):
+  def get_move_to_location(self, b_obj):
     try:
       move = input('Where would you like to move it? (1,8),(A-H):').upper();
       row, column  = Game_obj.translate_input_to_zero_base(move);
@@ -76,15 +76,15 @@ class Game:
     except (TypeError, ValueError, IndexError, KeyError):
       return None, None;
 
-  # Checks if game is won or draw ** Look for ways to make this FAST **
-  def is_game_over(self, b):
+  # Checks if game is won or draw
+  def is_game_over(self, b_obj):
     r, bl = 0, 0;
-    for each in b.CHECKERS:
+    for each in b_obj.CHECKERS:
       if each.startswith('R'):
         r += 1;
       else: # black checker case
         bl += 1;
-    if r == 0 or bl == 0 or b.MOVES_WITHOUT_JUMP > 14:
+    if r == 0 or bl == 0 or b_obj.MOVES_WITHOUT_JUMP > 14:
       self.GAME_OVER = True;
       return True;
     else:
@@ -144,6 +144,7 @@ if __name__ == '__main__':
   LA = LookAhead();
   # pixy_obj = Blocks();
   # control = cb.CheckerBoardControl();
+  # control.SetNeoPixelStaticColor(255, 255, 255); # Setting the lights white
   while (1):
     move_counter = 0;
     start_time = time.time();
@@ -152,10 +153,10 @@ if __name__ == '__main__':
     # control.Home();
     first = True;
     while not Game_obj.GAME_OVER:
-      # if (move_counter > 4):
-      #   # control.Home();
-      #   move_counter = 0;
-      #   pass;
+      if (move_counter > 4):
+        # control.Home();
+        # move_counter = 0;
+        pass;
       if True: #control.STAND_ALONE:
         # control.SetButtonLED(False);
         B_obj.AI_TURN = not B_obj.AI_TURN;
@@ -165,7 +166,7 @@ if __name__ == '__main__':
           B_obj = Interface.CreateGameBoard(piece_lst, B_obj.AI_TURN);
           B_obj.PrintBoard();
           first = False;
-        move_info = LA.IsJumpPossible(B_obj);
+        move_info = LA.GetNextMove(B_obj);
         from_place = str(Game_obj.translate_list_to_board(move_info[4])).replace("'", '');
         to_place = str(Game_obj.translate_list_to_board(move_info[1])).replace("'", '');
         # control.MovePiece(from_place, to_place);
@@ -192,23 +193,28 @@ if __name__ == '__main__':
           else:
             print('Red moved {} to {}\n'.format(str(move_info[0]).strip(' '), to_place));
         if move_info[5]: # got kinged
-          #do something from board control
+          print('kinged')
           pass;
+          # if B_obj.AI_TURN:
+          #   control.BlueKinged();
+          # else:
+          #   control.RedKinged();
         B_obj = move_info[3];
         B_obj.PrintBoard();
 
       else:
-        # print("AI's turn:");
         # control.SetButtonLED(True);
         # control.WaitForButton();
         # control.SetButtonLED(False);
+        print("AI's turn:");
         piece_lst = [];
         # piece_lst = pixy_obj.get_pixy_data();
         if first:
           B_obj = Interface.CreateGameBoard(piece_lst, True); # always AI turn in this game mode
           B_obj.PrintBoard();
           first = False;
-        move_info = LA.IsJumpPossible(B_obj);
+        B_obj.AI_TURN = True;
+        move_info = LA.GetNextMove(B_obj);
         from_place = Game_obj.translate_list_to_board(move_info[4]);
         to_place = Game_obj.translate_list_to_board(move_info[1]);
         # control.MovePiece(from_place, to_place);
@@ -228,8 +234,8 @@ if __name__ == '__main__':
         else:
           print('AI moved {} to {}\n'.format(str(move_info[0]).strip(' '), to_place));
         if move_info[5]: # got kinged
+          # control.BlueKinged();
           pass;
-          #do something from board control
         B_obj = move_info[3];
         B_obj.PrintBoard();
 
@@ -239,13 +245,13 @@ if __name__ == '__main__':
         if winner[0]:
           if winner[1] == 'Black':
             print('\nGame Over! Blue wins!!\n');
-            #set LED blue
+            # control.SetBlueWins();
           else:
             print('\nGame Over! Red wins!!\n');
-            #set LED Red
+            # control.SetRedWins();
         else:
           print('\nGame is a Draw\n');
-          #do something else
+          # control.SetDraw();
         print('Game took {} minutes.'.format(str((stop_time - start_time) / 60)));
         print('moves: ' + str(move_counter))
         del(B_obj); # deleting game object in preperation of new game

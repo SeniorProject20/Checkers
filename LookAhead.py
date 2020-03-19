@@ -3,7 +3,7 @@ from Checker import Checker;
 
 class LookAhead:
 
-  NUMBER_OF_LOOK_AHEAD_STEPS = 5;
+  NUMBER_OF_LOOK_AHEAD_STEPS = 2;
 
   # Looks at possible boards and selects best one
   def ChooseBestMove(self, poss_moves, board_obj):
@@ -22,27 +22,28 @@ class LookAhead:
               temp_board = board_obj;
               r, c = each[0], each[1];
               for step in range(self.NUMBER_OF_LOOK_AHEAD_STEPS):
-                if step == 0:
-                  score, boards, new_board_obj = self.CheckFirstTurn(temp_board, checker, r, c, boards, row, column);
-                  score = score * 2;
-                  best[step].append(score);
-                else:
-                  score, boards, new_board_obj = self.CheckNextTurns(temp_board, checker, boards);
-                  score = int(score * (1 / step));
-                  best[step].append(score);
-                score = 0;
-                temp_board = new_board_obj;
-                letter = 'B' if letter == 'R' else 'R';
-                temp_board.AI_TURN = not temp_board.AI_TURN;
-        j = len(best) - 1;
-        while j >= 0:
+                if self.CanCheckerMove(temp_board, checker):
+                  if step == 0:
+                    boards, score, new_board_obj = self.CheckFirstTurn(boards, temp_board, checker, r, c, row, column);
+                    score = score * 2;
+                  else:
+                    score, new_board_obj = self.CheckNextTurns(temp_board, checker);
+                    score = int(score * (1 / step));
+                  best[i].append(score);
+                  score = 0;
+                  temp_board = new_board_obj;
+                  letter = 'B' if letter == 'R' else 'R';
+                  temp_board.AI_TURN = not temp_board.AI_TURN;
+                  if self.IsGameOver(new_board_obj):
+                    break;
+            i += 1;
+        j, final = 0, [];
+        while j < len(best):
           temp_score = sum(best[j]);
-          best.pop(j);
-          best.append(temp_score);
-          j -= 1;
-        best.reverse();
-        higest = best.index(max(best));
-        # higest = [max(x) for x in best];
+          final.append(temp_score);
+          j += 1;
+        higest = final.index(max(final));
+        # higest = [max(x) for x in final];
         # higest = higest.index(max(higest));
         return boards[higest];
 
@@ -81,7 +82,7 @@ class LookAhead:
     except (IndexError, TypeError) as e:
       print('ChooseBestMove ' + str(e));
 
-  def CheckFirstTurn(self, temp_board, checker, r, c, boards, row, column):
+  def CheckFirstTurn(self, boards, temp_board, checker, r, c, row, column):
     try:
       letter = 'B' if temp_board.AI_TURN else 'R';
       checker_obj = temp_board.get_checker_object_from_name(checker);
@@ -98,11 +99,11 @@ class LookAhead:
         score = self.CalculateScore(r, c, letter, checker_obj.isKing, became_kinged, len(check[0][2]), 0);
       else:
         score = self.CalculateScore(r, c, letter, checker_obj.isKing, became_kinged, 0, 0);
-      return score, boards, new_board_obj;
+      return boards, score, new_board_obj;
     except (IndexError, TypeError) as e:
       print('CheckFirstTurn ' + str(e));
 
-  def CheckNextTurns(self, temp_board, checker, boards):
+  def CheckNextTurns(self, temp_board, checker):
     poss_moves, most_jumps = [], [];
     try:
       poss_moves = self.GetAllJumps(temp_board, checker, poss_moves);
@@ -112,9 +113,8 @@ class LookAhead:
         score, new_return = self.GetBestSingleMove(temp_board);
 
       new_board_obj = new_return[3];
-      boards.append(new_return)
 
-      return score, boards, new_board_obj;
+      return score, new_board_obj;
     except (IndexError, TypeError) as e:
       print('CheckNextTurns ' + str(e));
 
@@ -246,7 +246,7 @@ class LookAhead:
     return poss_moves;
 
   # determines if there is a jump possible for the current move
-  def IsJumpPossible(self, board_obj):
+  def GetNextMove(self, board_obj):
     poss_moves = [];
     try:
       if board_obj.AI_TURN:
@@ -260,9 +260,9 @@ class LookAhead:
             poss_moves = self.GetAllJumps(board_obj, checker, poss_moves);
         return self.ChooseBestMove(poss_moves, board_obj);
     except (IndexError, TypeError) as e:
-      print('IsJumpPossible ' + str(e));
+      print('GetNextMove ' + str(e));
 
-  # Same as IsJumpPossible, but doesn't recurse for ChooseBestMove
+  # Same as GetNextMove, but doesn't recurse for ChooseBestMove
   def CheckForOpponentJumps(self, board_obj):
     poss_moves = [];
     try:
@@ -406,3 +406,17 @@ class LookAhead:
         return None;
     else:
       return None;
+
+  # Checks if game is won or draw
+  def IsGameOver(self, b_obj):
+    r, bl = 0, 0;
+    for each in b_obj.CHECKERS:
+      if each.startswith('R'):
+        r += 1;
+      else: # black checker case
+        bl += 1;
+    if r == 0 or bl == 0 or b_obj.MOVES_WITHOUT_JUMP > 14:
+      self.GAME_OVER = True;
+      return True;
+    else:
+      return False;
